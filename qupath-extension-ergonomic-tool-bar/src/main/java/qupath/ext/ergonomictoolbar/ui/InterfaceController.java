@@ -26,10 +26,10 @@ public class InterfaceController extends VBox {
         return new InterfaceController();
     }
 
-    private InterfaceController() throws IOException {
-        var url = InterfaceController.class.getResource("interface.fxml");
+     public InterfaceController() throws IOException {
+        /*var url = InterfaceController.class.getResource("interface.fxml");
         FXMLLoader loader = new FXMLLoader(url, resources);
-        loader.setRoot(this);
+        //loader.setRoot(this);
         loader.setController(this);
         loader.load();
 
@@ -43,7 +43,7 @@ public class InterfaceController extends VBox {
             Dialogs.showInfoNotification(
                     resources.getString("title"),
                     String.format(resources.getString("threads"), newValue));
-        });
+        });*/
     }
 
     @FXML

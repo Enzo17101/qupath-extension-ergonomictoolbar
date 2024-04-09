@@ -3,6 +3,7 @@ package qupath.ext.ergonomictoolbar;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.Property;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.MenuItem;
 import javafx.stage.Stage;
@@ -165,8 +166,11 @@ public class ErgonomicToolBarExtension implements QuPathExtension, GitHubProject
 	private void createStage() {
 		if (stage == null) {
 			try {
+				var url = InterfaceController.class.getResource("HorizontalInterface.fxml");
+				FXMLLoader loader = new FXMLLoader(url);
+				//loader.setController(this);
 				stage = new Stage();
-				Scene scene = new Scene(InterfaceController.createInstance());
+				Scene scene = new Scene(loader.load());
 				stage.setScene(scene);
 			} catch (IOException e) {
 				Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
