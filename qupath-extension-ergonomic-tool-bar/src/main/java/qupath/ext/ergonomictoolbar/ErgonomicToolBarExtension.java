@@ -166,7 +166,7 @@ public class ErgonomicToolBarExtension implements QuPathExtension, GitHubProject
 	private void createStage() {
 		if (stage == null) {
 			try {
-				var url = InterfaceController.class.getResource("HorizontalInterface.fxml");
+				var url = InterfaceController.class.getResource("VerticalInterface.fxml");
 				FXMLLoader loader = new FXMLLoader(url);
 				//loader.setController(this);
 				stage = new Stage();
