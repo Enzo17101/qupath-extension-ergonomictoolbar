@@ -9,6 +9,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import qupath.ext.ergonomictoolbar.ErgonomicToolBarExtension;
 import qupath.fx.dialogs.Dialogs;
 
@@ -22,7 +23,8 @@ import java.util.ResourceBundle;
 public class InterfaceController extends VBox {
 
     @FXML
-    private AnchorPane mainPane; // j'ai ajouter un ID pour identifié AnchorPane
+    private AnchorPane mainPane; // This links to the AnchorPane in both FXML files
+    private Stage stage;
 
     private String currentOrientation = "horizontal";
     private static final ResourceBundle resources = ResourceBundle.getBundle("qupath.ext.ergonomictoolbar.ui.strings");
@@ -36,33 +38,39 @@ public class InterfaceController extends VBox {
 
     @FXML
     private void toggleToolbarOrientation() {
-        Stage stage = (Stage) mainPane.getScene().getWindow();
+        if (stage == null) {
+            stage = new Stage();
+            stage.setResizable(false);
+            stage.initStyle(StageStyle.UTILITY);
+        } else if (stage.isShowing()) {
+            stage.close(); // Fermez le stage avant de charger une nouvelle orientation
+        }
 
         FXMLLoader loader = new FXMLLoader();
-        if ("horizontal".equals(currentOrientation)) {
-            var url1 = InterfaceController.class.getResource("VerticalInterface.fxml");
-            loader.setLocation(url1);
-            try {
-                AnchorPane root = loader.load(); // Load vertical layout
-                stage.setScene(new Scene(root, root.getPrefWidth(), root.getPrefHeight()));
-                currentOrientation = "vertical";
-            } catch (IOException e) {
-                e.printStackTrace(); // Handle possible IOException
-            }
-        } else {
-            var url2 = InterfaceController.class.getResource("HorizontalInterface.fxml");
-            loader.setLocation(url2); // Ensure correct path
-            try {
-                AnchorPane root = loader.load(); // Load horizontal layout
-                stage.setScene(new Scene(root, root.getPrefWidth(), root.getPrefHeight())); // Use preferred size
-                currentOrientation = "horizontal"; // Update orientation
-            } catch (IOException e) {
-                e.printStackTrace(); // Handle possible IOException
-            }
+        String fxmlPath = "horizontal".equals(currentOrientation) ?
+                "/qupath/ext/ergonomictoolbar/ui/VerticalInterface.fxml" :
+                "/qupath/ext/ergonomictoolbar/ui/HorizontalInterface.fxml";
+
+        loader.setLocation(getClass().getResource(fxmlPath));
+
+        try {
+            AnchorPane root = loader.load();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+
+            // Mise à jour de l'orientation pour le prochain basculement
+            currentOrientation = "horizontal".equals(currentOrientation) ? "vertical" : "horizontal";
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-     public InterfaceController() throws IOException {
+
+
+
+
+    public InterfaceController() throws IOException {
         /*var url = InterfaceController.class.getResource("interface.fxml");
         FXMLLoader loader = new FXMLLoader(url, resources);
         //loader.setRoot(this);
