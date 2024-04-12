@@ -2,10 +2,13 @@ package qupath.ext.ergonomictoolbar.ui;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import qupath.ext.ergonomictoolbar.ErgonomicToolBarExtension;
 import qupath.fx.dialogs.Dialogs;
 
@@ -17,6 +20,11 @@ import java.util.ResourceBundle;
  */
 
 public class InterfaceController extends VBox {
+
+    @FXML
+    private AnchorPane mainPane; // j'ai ajouter un ID pour identifié AnchorPane
+
+    private String currentOrientation = "horizontal";
     private static final ResourceBundle resources = ResourceBundle.getBundle("qupath.ext.ergonomictoolbar.ui.strings");
 
     @FXML
@@ -24,6 +32,34 @@ public class InterfaceController extends VBox {
 
     public static InterfaceController createInstance() throws IOException {
         return new InterfaceController();
+    }
+
+    @FXML
+    private void toggleToolbarOrientation() {
+        Stage stage = (Stage) mainPane.getScene().getWindow();
+
+        FXMLLoader loader = new FXMLLoader();
+        if ("horizontal".equals(currentOrientation)) {
+            var url1 = InterfaceController.class.getResource("VerticalInterface.fxml");
+            loader.setLocation(url1);
+            try {
+                AnchorPane root = loader.load(); // Load vertical layout
+                stage.setScene(new Scene(root, root.getPrefWidth(), root.getPrefHeight()));
+                currentOrientation = "vertical";
+            } catch (IOException e) {
+                e.printStackTrace(); // Handle possible IOException
+            }
+        } else {
+            var url2 = InterfaceController.class.getResource("HorizontalInterface.fxml");
+            loader.setLocation(url2); // Ensure correct path
+            try {
+                AnchorPane root = loader.load(); // Load horizontal layout
+                stage.setScene(new Scene(root, root.getPrefWidth(), root.getPrefHeight())); // Use preferred size
+                currentOrientation = "horizontal"; // Update orientation
+            } catch (IOException e) {
+                e.printStackTrace(); // Handle possible IOException
+            }
+        }
     }
 
      public InterfaceController() throws IOException {
