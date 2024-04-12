@@ -2,10 +2,12 @@ package qupath.ext.ergonomictoolbar.ui;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.ChoiceBox;
+import javafx.scene.Scene;
 import javafx.scene.control.Spinner;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import qupath.ext.ergonomictoolbar.ErgonomicToolBarExtension;
 import qupath.fx.dialogs.Dialogs;
 
@@ -17,7 +19,14 @@ import java.util.ResourceBundle;
  */
 
 public class InterfaceController extends VBox {
+    private static final Logger logger = LoggerFactory.getLogger(ErgonomicToolBarExtension.class);
+
     private static final ResourceBundle resources = ResourceBundle.getBundle("qupath.ext.ergonomictoolbar.ui.strings");
+
+    /**
+     * Create a stage for the renameAnnotation view
+     */
+    private Stage renameAnnotationStage;
 
     @FXML
     private Spinner<Integer> threadSpinner;
@@ -51,5 +60,20 @@ public class InterfaceController extends VBox {
         System.out.println("Demo extension run");
     }
 
-
+    @FXML
+    private void renameAnnotation() {
+        if (renameAnnotationStage == null) {
+            try {
+                var url = InterfaceController.class.getResource("RenameAnnotation.fxml");
+                FXMLLoader loader = new FXMLLoader(url);
+                renameAnnotationStage = new Stage();
+                Scene scene = new Scene(loader.load());
+                renameAnnotationStage.setScene(scene);
+            } catch (IOException e) {
+                Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
+                logger.error("Unable to load extension interface FXML", e);
+            }
+        }
+        renameAnnotationStage.show();
+    }
 }

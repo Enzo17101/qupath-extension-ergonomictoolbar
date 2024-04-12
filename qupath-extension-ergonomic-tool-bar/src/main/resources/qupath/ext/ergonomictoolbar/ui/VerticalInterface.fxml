@@ -10,8 +10,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="100.0" xmlns="http://javafx.com/javafx/20" xmlns:fx="http://javafx.com/fxml/1" fx:controller="qupath.ext.ergonomictoolbar.ui.InterfaceController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="100.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="qupath.ext.ergonomictoolbar.ui.InterfaceController">
    <children>
       <VBox alignment="CENTER" layoutX="-10.0" layoutY="120.0" prefHeight="600.0" prefWidth="80.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -47,7 +46,7 @@
                   <ComboBox prefWidth="70.0" />
                </children>
             </VBox>
-            <Button maxHeight="30.0" maxWidth="70.0" minHeight="30.0" minWidth="70.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="70.0" style="-fx-background-color: 255,255,255;" text="Set Name" textAlignment="CENTER" wrapText="true">
+            <Button maxHeight="30.0" maxWidth="70.0" minHeight="30.0" minWidth="70.0" mnemonicParsing="false" onAction="#renameAnnotation" prefHeight="30.0" prefWidth="70.0" style="-fx-background-color: 255,255,255;" text="Set Name" textAlignment="CENTER" wrapText="true">
                <font>
                   <Font size="11.0" />
                </font>
