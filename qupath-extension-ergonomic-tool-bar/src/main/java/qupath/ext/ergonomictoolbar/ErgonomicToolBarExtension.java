@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.MenuItem;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qupath.ext.ergonomictoolbar.ui.InterfaceController;
@@ -172,6 +173,9 @@ public class ErgonomicToolBarExtension implements QuPathExtension, GitHubProject
 				stage = new Stage();
 				Scene scene = new Scene(loader.load());
 				stage.setScene(scene);
+				stage.setResizable(false);
+				//stage.initStyle(StageStyle.DECORATED);
+				stage.initStyle(StageStyle.UTILITY);
 			} catch (IOException e) {
 				Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
 				logger.error("Unable to load extension interface FXML", e);
