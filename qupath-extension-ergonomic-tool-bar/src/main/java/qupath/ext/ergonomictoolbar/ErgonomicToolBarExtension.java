@@ -100,7 +100,7 @@ public class ErgonomicToolBarExtension implements QuPathExtension, GitHubProject
 	/**
 	 * Create a stage for the extension to display
 	 */
-	private Stage stage;
+	private static Stage stage;
 
 	@Override
 	public void installExtension(QuPathGUI qupath) {
@@ -161,13 +161,22 @@ public class ErgonomicToolBarExtension implements QuPathExtension, GitHubProject
 		menu.getItems().add(menuItem);
 	}
 
+	public static Stage getSharedStage() {
+		if (stage == null) {
+			stage = new Stage();
+			stage.setResizable(false);
+			stage.initStyle(StageStyle.UTILITY); // Change this as needed
+		}
+		return stage;
+	}
+
 	/**
 	 * Demo showing how to create a new stage with a JavaFX FXML interface.
 	 */
 	private void createStage() {
 		if (stage == null) {
 			try {
-				var url = InterfaceController.class.getResource("HorizontalInterface.fxml");
+				var url = InterfaceController.class.getResource("VerticalInterface.fxml");
 				FXMLLoader loader = new FXMLLoader(url);
 				//loader.setController(this);
 				stage = new Stage();

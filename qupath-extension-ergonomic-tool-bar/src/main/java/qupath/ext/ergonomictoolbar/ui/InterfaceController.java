@@ -22,11 +22,9 @@ import java.util.ResourceBundle;
 
 public class InterfaceController extends VBox {
 
-    @FXML
-    private AnchorPane mainPane; // This links to the AnchorPane in both FXML files
-    private Stage stage;
+    private static String currentOrientation = "vertical";
 
-    private String currentOrientation = "horizontal";
+
     private static final ResourceBundle resources = ResourceBundle.getBundle("qupath.ext.ergonomictoolbar.ui.strings");
 
     @FXML
@@ -38,33 +36,30 @@ public class InterfaceController extends VBox {
 
     @FXML
     private void toggleToolbarOrientation() {
-        if (stage == null) {
-            stage = new Stage();
-            stage.setResizable(false);
-            stage.initStyle(StageStyle.UTILITY);
-        } else if (stage.isShowing()) {
-            stage.close(); // Fermez le stage avant de charger une nouvelle orientation
+        //System.out.println("Current orientation before toggle: " + currentOrientation);
+        Stage stage = ErgonomicToolBarExtension.getSharedStage();
+        if (stage.isShowing()) {
+            stage.close();
         }
 
-        FXMLLoader loader = new FXMLLoader();
-        String fxmlPath = "horizontal".equals(currentOrientation) ?
-                "/qupath/ext/ergonomictoolbar/ui/VerticalInterface.fxml" :
-                "/qupath/ext/ergonomictoolbar/ui/HorizontalInterface.fxml";
+        String newOrientation = "horizontal".equals(currentOrientation) ? "vertical" : "horizontal";
+        String fxmlPath = "/qupath/ext/ergonomictoolbar/ui/" + (newOrientation.equals("vertical") ? "VerticalInterface.fxml" : "HorizontalInterface.fxml");
 
-        loader.setLocation(getClass().getResource(fxmlPath));
-
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
         try {
-            AnchorPane root = loader.load();
-            Scene scene = new Scene(root);
+            AnchorPane mainPane = loader.load();
+            Scene scene = new Scene(mainPane);
             stage.setScene(scene);
             stage.show();
 
-            // Mise à jour de l'orientation pour le prochain basculement
-            currentOrientation = "horizontal".equals(currentOrientation) ? "vertical" : "horizontal";
+            // Update orientation for the next toggle
+            currentOrientation = newOrientation;
+            //System.out.println("New orientation after toggle: " + currentOrientation);
         } catch (IOException e) {
-            e.printStackTrace();
+            Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
         }
     }
+
 
 
 
