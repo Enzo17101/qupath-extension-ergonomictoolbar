@@ -87,8 +87,15 @@ public class RenameAnnotationController extends AnchorPane{
                             //Actualisation des noms d'annotation dans QuPath
                             QP.refreshIDs();
 
+
                             //Pour fermer la fenêtre automatiquement une fois le nom de l'annotation actualisé
-                            ((Stage) (nameTextField.getScene().getWindow())).close();
+                            //((Stage) (nameTextField.getScene().getWindow())).close();
+
+                            Stage stage = InterfaceController.getSharedRenameAnnotationStage();
+                            if(stage.isShowing())
+                            {
+                                stage.close();
+                            }
                         }
                     }
                 }

@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Spinner;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qupath.ext.ergonomictoolbar.ErgonomicToolBarExtension;
@@ -26,7 +27,7 @@ public class InterfaceController extends VBox {
     /**
      * Create a stage for the renameAnnotation view
      */
-    private Stage renameAnnotationStage;
+    private static Stage renameAnnotationStage;
 
     @FXML
     private Spinner<Integer> threadSpinner;
@@ -53,6 +54,15 @@ public class InterfaceController extends VBox {
                     resources.getString("title"),
                     String.format(resources.getString("threads"), newValue));
         });*/
+    }
+
+    public static Stage getSharedRenameAnnotationStage() {
+        if (renameAnnotationStage == null) {
+            renameAnnotationStage = new Stage();
+            renameAnnotationStage.setResizable(false);
+            renameAnnotationStage.initStyle(StageStyle.UTILITY); // Change this as needed
+        }
+        return renameAnnotationStage;
     }
 
     @FXML
