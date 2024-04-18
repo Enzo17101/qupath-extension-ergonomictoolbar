@@ -34,17 +34,8 @@ public class RenameAnnotationController extends AnchorPane{
     @FXML
     private Label errorLabel;
 
-    public static RenameAnnotationController createInstance() throws IOException {
-        return new RenameAnnotationController();
-    }
-
-    public RenameAnnotationController() throws IOException {
-
-    }
-
     @FXML
-    void validateNewName(ActionEvent event) {
-
+    void validateNewName() {
         try
         {
             String newName = nameTextField.getText();

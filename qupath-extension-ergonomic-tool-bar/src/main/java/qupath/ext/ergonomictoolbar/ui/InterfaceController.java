@@ -83,8 +83,9 @@ public class InterfaceController extends VBox {
 
     @FXML
     private void renameAnnotation() {
-        if (renameAnnotationStage == null) {
-            try {
+        try {
+            if (renameAnnotationStage == null) {
+
                 var url = InterfaceController.class.getResource("RenameAnnotation.fxml");
                 FXMLLoader loader = new FXMLLoader(url);
                 renameAnnotationStage = new Stage();
@@ -92,14 +93,14 @@ public class InterfaceController extends VBox {
                 renameAnnotationStage.setScene(scene);
                 renameAnnotationStage.setAlwaysOnTop(true);
                 renameAnnotationStage.show();
-            } catch (IOException e) {
-                Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
-                logger.error("Unable to load extension interface FXML", e);
+            }
+            else if (!renameAnnotationStage.isShowing()) {
+                renameAnnotationStage.show();
             }
         }
-        else if(!renameAnnotationStage.isShowing())
-        {
-            renameAnnotationStage.show();
+        catch (IOException e) {
+            Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
+            logger.error("Unable to load extension interface FXML", e);
         }
     }
 
