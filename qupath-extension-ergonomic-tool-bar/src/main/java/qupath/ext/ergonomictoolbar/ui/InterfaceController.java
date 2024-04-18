@@ -3,18 +3,8 @@ package qupath.ext.ergonomictoolbar.ui;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.Scene;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.slf4j.Logger;
@@ -35,10 +25,6 @@ public class InterfaceController extends VBox {
 
     private boolean is_Names_Display = true;
 
-    private static final ResourceBundle resources = ResourceBundle.getBundle("qupath.ext.ergonomictoolbar.ui.strings");
-
-
-
     /**
      * Logger user to save report the error into logs
      */
@@ -49,6 +35,7 @@ public class InterfaceController extends VBox {
      */
     private Stage renameAnnotationStage;
 
+    private Stage set_Class_Annotation_Stage;
 
     /**
      * The current orientation of the toolbar
@@ -126,20 +113,34 @@ public class InterfaceController extends VBox {
         viewer.getOverlayOptions().setShowNames(is_Names_Display);
     }
 
-    public void set_Class() throws IOException {
-        //var url = InterfaceController.class.getResource("ModifyClass.fxml");
-        //FXMLLoader loader = new FXMLLoader(url, resources);
+    public Stage getSharedSetClassAnnotationStage() {
+        if (set_Class_Annotation_Stage == null) {
+            set_Class_Annotation_Stage = new Stage();
+            set_Class_Annotation_Stage.setResizable(false);
+            set_Class_Annotation_Stage.initStyle(StageStyle.UTILITY); // Change this as needed
+        }
+        return set_Class_Annotation_Stage;
+    }
 
-        //loader.setRoot(this);
-        //loader.setController(this);
-        //loader.load();
+    public void set_Class_Annotation_Stage() throws IOException {
 
-        var url = InterfaceController.class.getResource("ModifyClass.fxml");
-        FXMLLoader loader = new FXMLLoader(url);
-        //set_Class_Annotation_Stage = new Stage();
-        Scene scene = new Scene(loader.load());
-        //set_Class_Annotation_Stage.setScene(scene);
-        //set_Class_Annotation_Stage.setAlwaysOnTop(true);
-        //set_Class_Annotation_Stage.show();
+        if (set_Class_Annotation_Stage == null) {
+            try {
+                var url = InterfaceController.class.getResource("ModifyClass.fxml");
+                FXMLLoader loader = new FXMLLoader(url);
+                set_Class_Annotation_Stage = new Stage();
+                Scene scene = new Scene(loader.load());
+                set_Class_Annotation_Stage.setScene(scene);
+                set_Class_Annotation_Stage.setAlwaysOnTop(true);
+                set_Class_Annotation_Stage.show();
+            } catch (IOException e) {
+                Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
+                logger.error("Unable to load extension interface FXML", e);
+            }
+        }
+        else if(!set_Class_Annotation_Stage.isShowing())
+        {
+            set_Class_Annotation_Stage.show();
+        }
     }
 }
