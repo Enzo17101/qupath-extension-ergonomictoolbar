@@ -4,9 +4,17 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.Scene;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.slf4j.Logger;
@@ -27,40 +35,86 @@ public class InterfaceController extends VBox {
 
     private boolean is_Names_Display = true;
 
-    private static final Logger logger = LoggerFactory.getLogger(ErgonomicToolBarExtension.class);
-
     private static final ResourceBundle resources = ResourceBundle.getBundle("qupath.ext.ergonomictoolbar.ui.strings");
 
-    @FXML
-    private Spinner<Integer> threadSpinner;
 
-    public static InterfaceController createInstance() throws IOException {
-        return new InterfaceController();
-    }
 
-     public InterfaceController() throws IOException {
-        /*var url = InterfaceController.class.getResource("interface.fxml");
-        FXMLLoader loader = new FXMLLoader(url, resources);
-        //loader.setRoot(this);
-        loader.setController(this);
-        loader.load();
+    /**
+     * Logger user to save report the error into logs
+     */
+    private static final Logger logger = LoggerFactory.getLogger(ErgonomicToolBarExtension.class);
 
-        // For extensions with a small number of options,
-        // or with options that are very important for how the extension works,
-        // it may be better to present them all to the user in the main extension GUI,
-        // binding them to GUI elements, so they are updated when the user interacts with
-        // the GUI, and so that the GUI elements are updated if the preference changes
-        threadSpinner.getValueFactory().valueProperty().bindBidirectional(ErgonomicToolBarExtension.numThreadsProperty());
-        threadSpinner.getValueFactory().valueProperty().addListener((observableValue, oldValue, newValue) -> {
-            Dialogs.showInfoNotification(
-                    resources.getString("title"),
-                    String.format(resources.getString("threads"), newValue));
-        });*/
-    }
+    /**
+     * Create a stage for the renameAnnotation view
+     */
+    private Stage renameAnnotationStage;
+
+
+    /**
+     * The current orientation of the toolbar
+     */
+    private static String currentOrientation = "vertical";
+
 
     @FXML
-    private void runDemoExtension() {
-        System.out.println("Demo extension run");
+    private void toggleToolbarOrientation() {
+        //System.out.println("Current orientation before toggle: " + currentOrientation);
+        Stage stage = ErgonomicToolBarExtension.getSharedStage();
+        if (stage.isShowing()) {
+            stage.close();
+        }
+
+        String newOrientation = "horizontal".equals(currentOrientation) ? "vertical" : "horizontal";
+        String fxmlPath = "/qupath/ext/ergonomictoolbar/ui/" + (newOrientation.equals("vertical") ? "VerticalInterface.fxml" : "HorizontalInterface.fxml");
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+        try {
+            AnchorPane mainPane = loader.load();
+            Scene scene = new Scene(mainPane);
+            stage.setScene(scene);
+            stage.show();
+
+            // Update orientation for the next toggle
+            currentOrientation = newOrientation;
+            //System.out.println("New orientation after toggle: " + currentOrientation);
+        } catch (IOException e) {
+            Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
+        }
+    }
+
+
+    /**
+     * @return the stage rename annotation scene
+     */
+    public Stage getSharedRenameAnnotationStage() {
+        if (renameAnnotationStage == null) {
+            renameAnnotationStage = new Stage();
+            renameAnnotationStage.setResizable(false);
+            renameAnnotationStage.initStyle(StageStyle.UTILITY); // Change this as needed
+        }
+        return renameAnnotationStage;
+    }
+
+    @FXML
+    private void renameAnnotation() {
+        if (renameAnnotationStage == null) {
+            try {
+                var url = InterfaceController.class.getResource("RenameAnnotation.fxml");
+                FXMLLoader loader = new FXMLLoader(url);
+                renameAnnotationStage = new Stage();
+                Scene scene = new Scene(loader.load());
+                renameAnnotationStage.setScene(scene);
+                renameAnnotationStage.setAlwaysOnTop(true);
+                renameAnnotationStage.show();
+            } catch (IOException e) {
+                Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
+                logger.error("Unable to load extension interface FXML", e);
+            }
+        }
+        else if(!renameAnnotationStage.isShowing())
+        {
+            renameAnnotationStage.show();
+        }
     }
 
     // Cette méthode permets d'afficher ou de cacher le nom de toutes les annotations en fonction de si elles le sont déjà ou non.

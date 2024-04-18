@@ -42,13 +42,13 @@ public class ErgonomicToolBarExtension implements QuPathExtension, GitHubProject
 	 * Display name for your extension
 	 * TODO: define this
 	 */
-	private static final String EXTENSION_NAME = "My Java extension";
+	private static final String EXTENSION_NAME = "Ergonomic toolbar extension";
 
 	/**
 	 * Short description, used under 'Extensions > Installed extensions'
 	 * TODO: define this
 	 */
-	private static final String EXTENSION_DESCRIPTION = "This is just a demo to show how extensions work";
+	private static final String EXTENSION_DESCRIPTION = "This is a toolbar which will help you to annotate your images faster.";
 
 	/**
 	 * QuPath version that the extension is designed to work with.
@@ -65,7 +65,7 @@ public class ErgonomicToolBarExtension implements QuPathExtension, GitHubProject
 	 * TODO: define this
 	 */
 	private static final GitHubRepo EXTENSION_REPOSITORY = GitHubRepo.create(
-			EXTENSION_NAME, "myGitHubUserName", "myGitHubRepo");
+			EXTENSION_NAME, "Enzo1710", "https://github.com/Enzo17101/qupath-extension-ergonomictoolbar");
 
 	/**
 	 * Flag whether the extension is already installed (might not be needed... but we'll do it anyway)
@@ -100,7 +100,7 @@ public class ErgonomicToolBarExtension implements QuPathExtension, GitHubProject
 	/**
 	 * Create a stage for the extension to display
 	 */
-	private Stage stage;
+	private static Stage stage;
 
 	@Override
 	public void installExtension(QuPathGUI qupath) {
@@ -123,8 +123,8 @@ public class ErgonomicToolBarExtension implements QuPathExtension, GitHubProject
 	private void addPreferenceToPane(QuPathGUI qupath) {
 		var propertyItem = new PropertyItemBuilder<>(enableExtensionProperty, Boolean.class)
 				.name("Enable extension")
-				.category("Demo extension")
-				.description("Enable the demo extension")
+				.category("Ergonomic toolbar extension")
+				.description("Enable the ergonomic toolbar extension")
 				.build();
 		qupath.getPreferencePane()
 				.getPropertySheet()
@@ -155,10 +155,19 @@ public class ErgonomicToolBarExtension implements QuPathExtension, GitHubProject
 	 */
 	private void addMenuItem(QuPathGUI qupath) {
 		var menu = qupath.getMenu("Extensions>" + EXTENSION_NAME, true);
-		MenuItem menuItem = new MenuItem("My menu item");
+		MenuItem menuItem = new MenuItem("Show extension");
 		menuItem.setOnAction(e -> createStage());
 		menuItem.disableProperty().bind(enableExtensionProperty.not());
 		menu.getItems().add(menuItem);
+	}
+
+	public static Stage getSharedStage() {
+		if (stage == null) {
+			stage = new Stage();
+			stage.setResizable(false);
+			stage.initStyle(StageStyle.UTILITY); // Change this as needed
+		}
+		return stage;
 	}
 
 	/**
@@ -167,15 +176,16 @@ public class ErgonomicToolBarExtension implements QuPathExtension, GitHubProject
 	private void createStage() {
 		if (stage == null) {
 			try {
+
 				var url = InterfaceController.class.getResource("VerticalInterface.fxml");
 				FXMLLoader loader = new FXMLLoader(url);
-				//loader.setController(this);
 				stage = new Stage();
 				Scene scene = new Scene(loader.load());
 				stage.setScene(scene);
 				stage.setResizable(false);
 				//stage.initStyle(StageStyle.DECORATED);
 				stage.initStyle(StageStyle.UTILITY);
+				stage.setAlwaysOnTop(true);
 			} catch (IOException e) {
 				Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
 				logger.error("Unable to load extension interface FXML", e);
