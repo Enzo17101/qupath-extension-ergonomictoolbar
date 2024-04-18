@@ -43,7 +43,7 @@ public class InterfaceController extends VBox {
     /**
      * Create a stage for the renameAnnotation view
      */
-    private static Stage renameAnnotationStage;
+    private Stage renameAnnotationStage;
 
 
     /**
@@ -82,7 +82,7 @@ public class InterfaceController extends VBox {
     /**
      * @return the stage rename annotation scene
      */
-    public static Stage getSharedRenameAnnotationStage() {
+    public Stage getSharedRenameAnnotationStage() {
         if (renameAnnotationStage == null) {
             renameAnnotationStage = new Stage();
             renameAnnotationStage.setResizable(false);
@@ -100,11 +100,16 @@ public class InterfaceController extends VBox {
                 renameAnnotationStage = new Stage();
                 Scene scene = new Scene(loader.load());
                 renameAnnotationStage.setScene(scene);
+                renameAnnotationStage.setAlwaysOnTop(true);
                 renameAnnotationStage.show();
             } catch (IOException e) {
                 Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
                 logger.error("Unable to load extension interface FXML", e);
             }
+        }
+        else if(!renameAnnotationStage.isShowing())
+        {
+            renameAnnotationStage.show();
         }
     }
 

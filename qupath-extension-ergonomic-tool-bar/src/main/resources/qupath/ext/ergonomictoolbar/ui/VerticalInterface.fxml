@@ -5,27 +5,26 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="100.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="qupath.ext.ergonomictoolbar.ui.InterfaceController">
+<AnchorPane maxHeight="575.0" maxWidth="65.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="575.0" prefWidth="65.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="qupath.ext.ergonomictoolbar.ui.InterfaceController">
    <children>
-      <VBox alignment="CENTER" layoutX="-10.0" layoutY="120.0" prefHeight="600.0" prefWidth="80.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <VBox alignment="CENTER" layoutX="-10.0" layoutY="120.0" prefHeight="575.0" prefWidth="65.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Button maxHeight="70.0" maxWidth="70.0" minHeight="70.0" minWidth="70.0" mnemonicParsing="false" prefHeight="70.0" prefWidth="70.0" style="-fx-background-color: 255,255,255;">
+            <Button maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;">
                <graphic>
-                  <ImageView fitHeight="70.0" fitWidth="70.0" pickOnBounds="true">
+                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true">
                      <image>
                         <Image url="@Images/forme.png" />
                      </image>
                   </ImageView>
                </graphic>
             </Button>
-            <Button maxHeight="70.0" maxWidth="70.0" minHeight="70.0" minWidth="70.0" mnemonicParsing="false" prefHeight="70.0" prefWidth="70.0" style="-fx-background-color: 255,255,255;">
+            <Button maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;">
                <graphic>
-                  <ImageView fitHeight="70.0" fitWidth="70.0" pickOnBounds="true">
+                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true">
                      <image>
                         <Image url="@Images/carré.png" />
                      </image>
@@ -34,64 +33,60 @@
             </Button>
             <VBox alignment="CENTER" prefHeight="80.0" prefWidth="80.0">
                <children>
-                  <Button maxHeight="50.0" maxWidth="70.0" minHeight="50.0" minWidth="70.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="70.0" style="-fx-background-color: 255,255,255;">
+                  <Button maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;">
                      <graphic>
-                        <ImageView fitHeight="50.0" fitWidth="70.0" pickOnBounds="true">
+                        <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true">
                            <image>
                               <Image url="@Images/carré.png" />
                            </image>
                         </ImageView>
                      </graphic>
                   </Button>
-                  <ComboBox prefWidth="70.0" />
+                  <ComboBox prefWidth="60.0" />
                </children>
             </VBox>
-            <Button maxHeight="30.0" maxWidth="70.0" minHeight="30.0" minWidth="70.0" mnemonicParsing="false" onAction="#renameAnnotation" prefHeight="30.0" prefWidth="70.0" style="-fx-background-color: 255,255,255;" text="Set Name" textAlignment="CENTER" wrapText="true">
+            <Button maxHeight="30.0" maxWidth="60.0" minHeight="30.0" minWidth="60.0" mnemonicParsing="false" onAction="#renameAnnotation" prefHeight="30.0" prefWidth="60.0" text="Set Name" textAlignment="CENTER" wrapText="true">
                <font>
-                  <Font size="11.0" />
+                  <Font size="10.0" />
                </font>
             </Button>
-            <Button layoutX="15.0" layoutY="233.0" maxHeight="30.0" maxWidth="70.0" minHeight="30.0" minWidth="70.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="70.0" style="-fx-background-color: 255,255,255;" text="Set Class" textAlignment="CENTER" wrapText="true">
+            <Button layoutX="15.0" layoutY="233.0" maxHeight="30.0" maxWidth="60.0" minHeight="30.0" minWidth="60.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="60.0" text="Set Class" textAlignment="CENTER" wrapText="true">
                <font>
-                  <Font size="11.0" />
+                  <Font size="10.0" />
                </font>
             </Button>
-            <Button maxHeight="60.0" maxWidth="60.0" minHeight="60.0" minWidth="60.0" mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" style="-fx-background-color: 255,255,255;">
+            <Button maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;">
                <graphic>
-                  <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true">
+                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true">
                      <image>
                         <Image url="@Images/cadenas.png" />
                      </image>
                   </ImageView>
                </graphic>
             </Button>
-            <HBox prefHeight="50.0" prefWidth="100.0">
-               <children>
-                  <Button maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: 255,255,255;">
-                     <graphic>
-                        <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true">
-                           <image>
-                              <Image url="@Images/overlay.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
-                  </Button>
-                  <Button maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: 255,255,255;">
-                     <graphic>
-                        <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true">
-                           <image>
-                              <Image url="@Images/names.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
-                  </Button>
-               </children>
-            </HBox>
-            <Button maxHeight="70.0" maxWidth="70.0" minHeight="70.0" minWidth="70.0" mnemonicParsing="false" prefHeight="70.0" prefWidth="70.0" style="-fx-background-color: 255,255,255;">
+            <Button maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#toggleToolbarOrientation" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;">
                <graphic>
-                  <ImageView fitHeight="70.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@Images/passerenhorizontal.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;">
+               <graphic>
+                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true">
+                     <image>
+                        <Image url="@Images/overlay.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#display_Or_Hide_Names" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;">
+               <graphic>
+                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true">
+                     <image>
+                        <Image url="@Images/names.png" />
                      </image>
                   </ImageView>
                </graphic>
@@ -101,9 +96,9 @@
                   <Font size="9.0" />
                </font>
             </Text>
-            <Button maxHeight="60.0" maxWidth="60.0" minHeight="60.0" minWidth="60.0" mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" style="-fx-background-color: 255,255,255;">
+            <Button maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;">
                <graphic>
-                  <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true">
+                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true">
                      <image>
                         <Image url="@Images/enregistrer.png" />
                      </image>

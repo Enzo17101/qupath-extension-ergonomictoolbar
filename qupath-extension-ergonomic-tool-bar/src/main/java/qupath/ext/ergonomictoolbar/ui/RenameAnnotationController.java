@@ -90,11 +90,9 @@ public class RenameAnnotationController extends AnchorPane{
 
                             //Pour fermer la fenêtre automatiquement une fois le nom de l'annotation actualisé
 
-                            Stage stage = InterfaceController.getSharedRenameAnnotationStage();
-                            if(stage.isShowing())
-                            {
-                                stage.close();
-                            }
+                            Stage stage = (Stage) nameTextField.getScene().getWindow();
+
+                            stage.close();
                         }
                     }
                 }
