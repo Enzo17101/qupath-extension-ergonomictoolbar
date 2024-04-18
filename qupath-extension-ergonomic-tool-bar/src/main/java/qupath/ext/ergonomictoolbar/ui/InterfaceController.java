@@ -27,17 +27,23 @@ import java.util.ResourceBundle;
 
 public class InterfaceController extends VBox {
 
-    private static String currentOrientation = "vertical";
 
 
+    /**
+     * Logger user to save report the error into logs
+     */
     private static final Logger logger = LoggerFactory.getLogger(ErgonomicToolBarExtension.class);
-
 
     /**
      * Create a stage for the renameAnnotation view
      */
     private static Stage renameAnnotationStage;
 
+
+    /**
+     * The current orientation of the toolbar
+     */
+    private static String currentOrientation = "vertical";
 
 
     @FXML
@@ -66,6 +72,10 @@ public class InterfaceController extends VBox {
         }
     }
 
+
+    /**
+     * @return the stage rename annotation scene
+     */
     public static Stage getSharedRenameAnnotationStage() {
         if (renameAnnotationStage == null) {
             renameAnnotationStage = new Stage();
@@ -73,11 +83,6 @@ public class InterfaceController extends VBox {
             renameAnnotationStage.initStyle(StageStyle.UTILITY); // Change this as needed
         }
         return renameAnnotationStage;
-    }
-
-    @FXML
-    private void runDemoExtension() {
-        System.out.println("Demo extension run");
     }
 
     @FXML
@@ -89,11 +94,11 @@ public class InterfaceController extends VBox {
                 renameAnnotationStage = new Stage();
                 Scene scene = new Scene(loader.load());
                 renameAnnotationStage.setScene(scene);
+                renameAnnotationStage.show();
             } catch (IOException e) {
                 Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
                 logger.error("Unable to load extension interface FXML", e);
             }
         }
-        renameAnnotationStage.show();
     }
 }
