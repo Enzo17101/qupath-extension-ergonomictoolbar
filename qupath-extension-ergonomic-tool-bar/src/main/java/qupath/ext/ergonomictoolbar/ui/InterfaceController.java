@@ -2,10 +2,15 @@ package qupath.ext.ergonomictoolbar.ui;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import qupath.ext.ergonomictoolbar.ErgonomicToolBarExtension;
 import qupath.fx.dialogs.Dialogs;
 import qupath.lib.gui.QuPathGUI;
@@ -21,6 +26,8 @@ import java.util.ResourceBundle;
 public class InterfaceController extends VBox {
 
     private boolean is_Names_Display = true;
+
+    private static final Logger logger = LoggerFactory.getLogger(ErgonomicToolBarExtension.class);
 
     private static final ResourceBundle resources = ResourceBundle.getBundle("qupath.ext.ergonomictoolbar.ui.strings");
 
@@ -63,5 +70,22 @@ public class InterfaceController extends VBox {
         QuPathGUI quPath_GUI = QuPathGUI.getInstance();
         QuPathViewer viewer = quPath_GUI.getViewer();
         viewer.getOverlayOptions().setShowNames(is_Names_Display);
+    }
+
+    public void set_Class() throws IOException {
+        //var url = InterfaceController.class.getResource("ModifyClass.fxml");
+        //FXMLLoader loader = new FXMLLoader(url, resources);
+
+        //loader.setRoot(this);
+        //loader.setController(this);
+        //loader.load();
+
+        var url = InterfaceController.class.getResource("ModifyClass.fxml");
+        FXMLLoader loader = new FXMLLoader(url);
+        set_Class_Annotation_Stage = new Stage();
+        Scene scene = new Scene(loader.load());
+        set_Class_Annotation_Stage.setScene(scene);
+        set_Class_Annotation_Stage.setAlwaysOnTop(true);
+        set_Class_Annotation_Stage.show();
     }
 }
