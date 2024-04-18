@@ -181,11 +181,11 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
 
         var url = InterfaceController.class.getResource("ModifyClass.fxml");
         FXMLLoader loader = new FXMLLoader(url);
-        set_Class_Annotation_Stage = new Stage();
+        //set_Class_Annotation_Stage = new Stage();
         Scene scene = new Scene(loader.load());
-        set_Class_Annotation_Stage.setScene(scene);
-        set_Class_Annotation_Stage.setAlwaysOnTop(true);
-        set_Class_Annotation_Stage.show();
+        //set_Class_Annotation_Stage.setScene(scene);
+        //set_Class_Annotation_Stage.setAlwaysOnTop(true);
+        //set_Class_Annotation_Stage.show();
     }
 
     /**
