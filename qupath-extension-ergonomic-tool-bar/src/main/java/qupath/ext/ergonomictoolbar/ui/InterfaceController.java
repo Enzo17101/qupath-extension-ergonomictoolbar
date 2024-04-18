@@ -17,6 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qupath.ext.ergonomictoolbar.ErgonomicToolBarExtension;
 import qupath.fx.dialogs.Dialogs;
+import qupath.lib.gui.QuPathGUI;
+import qupath.lib.gui.viewer.QuPathViewer;
 
 import java.io.IOException;
 import java.util.ResourceBundle;
@@ -26,6 +28,10 @@ import java.util.ResourceBundle;
  */
 
 public class InterfaceController extends VBox {
+
+    private boolean is_Names_Display = true;
+
+    private static final ResourceBundle resources = ResourceBundle.getBundle("qupath.ext.ergonomictoolbar.ui.strings");
 
 
 
@@ -100,5 +106,14 @@ public class InterfaceController extends VBox {
                 logger.error("Unable to load extension interface FXML", e);
             }
         }
+    }
+
+    // Cette méthode permets d'afficher ou de cacher le nom de toutes les annotations en fonction de si elles le sont déjà ou non.
+    public void display_Or_Hide_Names() {
+        is_Names_Display = !is_Names_Display;
+
+        QuPathGUI quPath_GUI = QuPathGUI.getInstance();
+        QuPathViewer viewer = quPath_GUI.getViewer();
+        viewer.getOverlayOptions().setShowNames(is_Names_Display);
     }
 }
