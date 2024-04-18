@@ -3,14 +3,8 @@ package qupath.ext.ergonomictoolbar.ui;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.Scene;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.slf4j.Logger;
@@ -30,10 +24,6 @@ import java.util.ResourceBundle;
 public class InterfaceController extends VBox {
 
     private boolean is_Names_Display = true;
-
-    private static final ResourceBundle resources = ResourceBundle.getBundle("qupath.ext.ergonomictoolbar.ui.strings");
-
-
 
     /**
      * Logger user to save report the error into logs
