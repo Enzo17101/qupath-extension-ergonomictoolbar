@@ -100,7 +100,7 @@ public class ErgonomicToolBarExtension implements QuPathExtension, GitHubProject
 	/**
 	 * Create a stage for the extension to display
 	 */
-	private Stage stage;
+	private static Stage stage;
 
 	@Override
 	public void installExtension(QuPathGUI qupath) {
@@ -159,6 +159,15 @@ public class ErgonomicToolBarExtension implements QuPathExtension, GitHubProject
 		menuItem.setOnAction(e -> createStage());
 		menuItem.disableProperty().bind(enableExtensionProperty.not());
 		menu.getItems().add(menuItem);
+	}
+
+	public static Stage getSharedStage() {
+		if (stage == null) {
+			stage = new Stage();
+			stage.setResizable(false);
+			stage.initStyle(StageStyle.UTILITY); // Change this as needed
+		}
+		return stage;
 	}
 
 	/**
