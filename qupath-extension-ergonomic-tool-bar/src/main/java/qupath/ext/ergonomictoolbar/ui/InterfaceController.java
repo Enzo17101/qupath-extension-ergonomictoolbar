@@ -52,7 +52,7 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
     private static String currentOrientation = "vertical";
 
     @FXML
-    private Text my_Label = new Text("Aire en mm²");
+    private Text my_Label;
 
     @FXML
     private void toggleToolbarOrientation() {
