@@ -1,21 +1,15 @@
 package qupath.ext.ergonomictoolbar.ui;
 
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.Scene;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import javafx.stage.Stage;
-import javafx.stage.Stage;
 import qupath.ext.ergonomictoolbar.ErgonomicToolBarExtension;
 import qupath.fx.dialogs.Dialogs;
 import qupath.lib.gui.QuPathGUI;
@@ -23,17 +17,11 @@ import qupath.lib.gui.measure.ObservableMeasurementTableData;
 import qupath.lib.images.ImageData;
 import qupath.lib.objects.PathObject;
 import qupath.lib.objects.hierarchy.events.PathObjectSelectionListener;
-import qupath.lib.gui.QuPathGUI;
 import qupath.lib.gui.viewer.QuPathViewer;
-import qupath.lib.gui.QuPathGUI;
-import qupath.lib.gui.measure.ObservableMeasurementTableData;
-import qupath.lib.images.ImageData;
-import qupath.lib.objects.PathObject;
-import qupath.lib.objects.hierarchy.events.PathObjectSelectionListener;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.ResourceBundle;
 
 import static java.lang.Math.round;
 import static qupath.lib.gui.scripting.QPEx.getQuPath;
@@ -63,6 +51,8 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
      */
     private static String currentOrientation = "vertical";
 
+    @FXML
+    private Text my_Label = new Text("Aire en mm²");
 
     @FXML
     private void toggleToolbarOrientation() {
@@ -135,26 +125,40 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
         viewer.getOverlayOptions().setShowNames(is_Names_Display);
     }
 
+    /**
+     * Return area when annotations have been selected
+     */
+    @Override
     public void selectedPathObjectChanged(PathObject pathObjectSelected, PathObject previousObject, Collection<PathObject> allSelected) {
-        // Here goes your selection change logic
-        //mettre dans le constructeur
-        //qupath = getQuPath();
-        //         qupath.getImageData().getHierarchy().getSelectionModel().addPathObjectSelectionListener(this);
+
         if (pathObjectSelected == null){
-            //label.setText("No selection");
-            System.out.println("No selection");
+            my_Label.setText("Aire : rien n'est sélectionné");
         }
         else {
-            ImageData imageData = getCurrentImageData();
+            // Here goes your selection change logic
+            ImageData<BufferedImage> imageData = getCurrentImageData();
 
             Collection<PathObject> tissues = getAnnotationObjects();
             ObservableMeasurementTableData ob = new ObservableMeasurementTableData();
             ob.setImageData(imageData, tissues);
             String area = "Area µm^2";
             double annotationArea = ob.getNumericValue(getCurrentHierarchy().getSelectionModel().getSelectedObject(), area);
-            //label.setText("Names: " + (annotationArea/1000000) + "\n");
             double roundArea = (double) round(annotationArea/1000)*1000;
-            System.out.println("Aires: " + roundArea/1000000 + "\n");
+            //Area of current annotation
+            double aire = roundArea / 1000000;
+            System.out.println(my_Label.getText());
+            my_Label.setText("Aire : " + aire + " mm²");
         }
     }
+
+    public InterfaceController() throws IOException {
+
+        getQuPath().getImageData().getHierarchy().getSelectionModel().addPathObjectSelectionListener(this);
+
+    }
+
+    public static InterfaceController createInstance() throws IOException {
+        return new InterfaceController();
+    }
+
 }

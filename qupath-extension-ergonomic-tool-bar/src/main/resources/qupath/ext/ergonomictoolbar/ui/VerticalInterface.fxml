@@ -91,7 +91,7 @@
                   </ImageView>
                </graphic>
             </Button>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Aire: x mm2" textAlignment="CENTER" wrappingWidth="70.0">
+            <Text fx:id="my_Label" strokeType="OUTSIDE" strokeWidth="0.0" text="Aire: x mm2" textAlignment="CENTER" wrappingWidth="70.0">
                <font>
                   <Font size="9.0" />
                </font>

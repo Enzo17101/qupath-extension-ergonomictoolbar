@@ -87,7 +87,7 @@
                   </ImageView>
                </graphic>
             </Button>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Aire de l'annotation sélectionnée: x mm2" textAlignment="CENTER" wrappingWidth="55.0">
+            <Text fx:id="my_Label" strokeType="OUTSIDE" strokeWidth="0.0" text="Aire de l'annotation sélectionnée: x mm2" textAlignment="CENTER" wrappingWidth="55.0">
                <font>
                   <Font size="9.0" />
                </font>
