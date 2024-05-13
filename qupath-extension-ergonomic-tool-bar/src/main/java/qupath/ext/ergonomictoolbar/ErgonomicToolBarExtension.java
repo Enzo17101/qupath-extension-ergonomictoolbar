@@ -3,11 +3,15 @@ package qupath.ext.ergonomictoolbar;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.Property;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.MenuItem;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.stage.Window;
+import org.locationtech.jts.util.Debug;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qupath.ext.ergonomictoolbar.ui.InterfaceController;
@@ -19,6 +23,7 @@ import qupath.lib.gui.extensions.GitHubProject;
 import qupath.lib.gui.extensions.QuPathExtension;
 import qupath.lib.gui.prefs.PathPrefs;
 
+import javax.swing.event.DocumentEvent;
 import java.io.IOException;
 
 
@@ -161,17 +166,22 @@ public class ErgonomicToolBarExtension implements QuPathExtension, GitHubProject
 		menu.getItems().add(menuItem);
 	}
 
-	public static Stage getSharedStage() {
-		if (stage == null) {
-			stage = new Stage();
-			stage.setResizable(false);
-			stage.initStyle(StageStyle.UTILITY); // Change this as needed
+	public static Stage getSharedStage(boolean vertical) {
+		if(stage!=null){
+			if (stage.isShowing()) {
+				stage.hide();
+			}
+			stage.close();
 		}
+		stage = new Stage();
+		stage.setResizable(false);
+		if(vertical) stage.initStyle(StageStyle.UTILITY); // Change this as needed
+		else stage.initStyle(StageStyle.DECORATED);
 		return stage;
 	}
 
 	/**
-	 * Demo showing how to create a new stage with a JavaFX FXML interface.
+	 * Creating a new stage for the extension
 	 */
 	private void createStage() {
 		if (stage == null) {
@@ -183,9 +193,9 @@ public class ErgonomicToolBarExtension implements QuPathExtension, GitHubProject
 				Scene scene = new Scene(loader.load());
 				stage.setScene(scene);
 				stage.setResizable(false);
-				//stage.initStyle(StageStyle.DECORATED);
 				stage.initStyle(StageStyle.UTILITY);
-				stage.setAlwaysOnTop(true);
+				//stage.setAlwaysOnTop(true);
+
 			} catch (IOException e) {
 				Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
 				logger.error("Unable to load extension interface FXML", e);

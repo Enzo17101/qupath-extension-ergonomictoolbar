@@ -38,31 +38,31 @@ public class InterfaceController extends VBox {
 
     /**
      * The current orientation of the toolbar
+     * true means vertical
+     * false means horizontal
      */
-    private static String currentOrientation = "vertical";
+    private static boolean currentOrientation = true;//vertical
 
 
     @FXML
     private void toggleToolbarOrientation() {
-        //System.out.println("Current orientation before toggle: " + currentOrientation);
-        Stage stage = ErgonomicToolBarExtension.getSharedStage();
-        if (stage.isShowing()) {
-            stage.close();
-        }
+        boolean newOrientation = !currentOrientation;
+        String fxmlPath = "/qupath/ext/ergonomictoolbar/ui/" + (newOrientation ? "VerticalInterface.fxml" : "HorizontalInterface.fxml");
 
-        String newOrientation = "horizontal".equals(currentOrientation) ? "vertical" : "horizontal";
-        String fxmlPath = "/qupath/ext/ergonomictoolbar/ui/" + (newOrientation.equals("vertical") ? "VerticalInterface.fxml" : "HorizontalInterface.fxml");
+        //Recreate the extension with the new orientation
+        Stage stage = ErgonomicToolBarExtension.getSharedStage(newOrientation);
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
         try {
             AnchorPane mainPane = loader.load();
             Scene scene = new Scene(mainPane);
-            stage.setScene(scene);
-            stage.show();
 
             // Update orientation for the next toggle
             currentOrientation = newOrientation;
-            //System.out.println("New orientation after toggle: " + currentOrientation);
+
+            stage.setScene(scene);
+            stage.show();
+
         } catch (IOException e) {
             Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
         }

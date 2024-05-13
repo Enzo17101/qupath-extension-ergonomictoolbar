@@ -11,7 +11,7 @@
 
 <AnchorPane maxHeight="575.0" maxWidth="65.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="575.0" prefWidth="65.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="qupath.ext.ergonomictoolbar.ui.InterfaceController">
    <children>
-      <VBox alignment="CENTER" layoutX="-10.0" layoutY="120.0" prefHeight="575.0" prefWidth="65.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <VBox alignment="CENTER" layoutX="-10.0" layoutY="120.0" prefHeight="600.0" prefWidth="65.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <Button maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;">
                <graphic>
@@ -33,9 +33,9 @@
             </Button>
             <VBox alignment="CENTER" prefHeight="80.0" prefWidth="80.0">
                <children>
-                  <Button maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;">
+                  <Button maxHeight="40.0" maxWidth="50.0" minHeight="40.0" minWidth="50.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="50.0" style="-fx-background-color: white;">
                      <graphic>
-                        <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true">
+                        <ImageView fitHeight="40.0" fitWidth="50.0" pickOnBounds="true">
                            <image>
                               <Image url="@Images/carré.png" />
                            </image>
@@ -64,15 +64,6 @@
                   </ImageView>
                </graphic>
             </Button>
-            <Button maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#toggleToolbarOrientation" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;">
-               <graphic>
-                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@Images/passerenhorizontal.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-            </Button>
             <Button maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;">
                <graphic>
                   <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true">
@@ -91,9 +82,23 @@
                   </ImageView>
                </graphic>
             </Button>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Aire: x mm2" textAlignment="CENTER" wrappingWidth="70.0">
+            <Button maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#toggleToolbarOrientation" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;">
+               <graphic>
+                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@Images/passerenhorizontal.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Aire :" textAlignment="CENTER" wrappingWidth="70.0">
                <font>
-                  <Font size="9.0" />
+                  <Font size="11.0" />
+               </font>
+            </Text>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="X mm" textAlignment="CENTER" wrappingWidth="70.0">
+               <font>
+                  <Font size="11.0" />
                </font>
             </Text>
             <Button maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;">
