@@ -26,6 +26,7 @@ import java.util.Collection;
 import static java.lang.Math.round;
 import static qupath.lib.gui.scripting.QPEx.getQuPath;
 import static qupath.lib.scripting.QP.*;
+import qupath.lib.gui.commands.Commands;
 
 /**
  * Controller for UI pane contained in interface.fxml
@@ -165,6 +166,21 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
 
     public static InterfaceController createInstance() throws IOException {
         return new InterfaceController();
+    }
+
+    /**
+     * Sauvegarde l'image actuelle
+     */
+    public void save_Project(){
+
+        if(getQuPath() != null) {
+            if (getQuPath().getImageData() != null) {
+                Commands.promptToSaveImageData(getQuPath(),getQuPath().getImageData(),true);
+            }
+        }
+
+
+
     }
 
 }
