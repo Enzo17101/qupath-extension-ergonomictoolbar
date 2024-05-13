@@ -146,14 +146,20 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
             double roundArea = (double) round(annotationArea/1000)*1000;
             //Area of current annotation
             double aire = roundArea / 1000000;
-            System.out.println(my_Label.getText());
             my_Label.setText("Aire : " + aire + " mm²");
         }
     }
 
     public InterfaceController() throws IOException {
 
-        getQuPath().getImageData().getHierarchy().getSelectionModel().addPathObjectSelectionListener(this);
+        //Pour éviter les problèmes si aucune image n'est ouverte
+        //Demandera de rafraichir l'extension (en changeant l'orientation par exemple)
+        if(getQuPath() != null){
+            if(getQuPath().getImageData() != null){
+                getQuPath().getImageData().getHierarchy().getSelectionModel().addPathObjectSelectionListener(this);
+            }
+
+        }
 
     }
 
