@@ -200,6 +200,7 @@ public class ErgonomicToolBarExtension implements QuPathExtension, GitHubProject
 			} catch (IOException e) {
 				Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
 				logger.error("Unable to load extension interface FXML", e);
+
 			}
 		}
 		stage.show();
