@@ -34,6 +34,10 @@ public class InterfaceController extends VBox {
 
     private boolean is_Names_Display = true;
 
+    private int rectangular_selection_width = 200;
+    private int rectangular_selection_height = 100;
+    private boolean rectangular_selection_size_in_pixels = true;
+
     /**
      * Logger user to save report the error into logs
      */
@@ -125,61 +129,58 @@ public class InterfaceController extends VBox {
     // Cette méthode permet de verrouiller ou déverouiller une annotation
     @FXML
     private void lock_Or_Unlock_Selection() {
-        // On récupère l'instance actuelle de QuPathGUI et le viewer
         QuPathGUI gui = QuPathGUI.getInstance();
         QuPathViewer viewer = gui.getViewer();
+        ImageData<?> imageData = gui.getImageData();
 
+        // if the viewer exists and an object is currently selected
         if (viewer != null && viewer.getSelectedObject() != null) {
+            // Get the currently selected object
             PathObject selectedObject = viewer.getSelectedObject();
 
-            // On vérifie si l'objet est déjà verrouillé
+            // Check the lock status
             boolean isLocked = selectedObject.isLocked();
 
-            // On inverse l'état de verrouillage
+            // Reverse the lock status
             selectedObject.setLocked(!isLocked);
 
-            // On met à jour l'affichage pour refléter le changement
+            // Update the display
+            imageData.getHierarchy().fireHierarchyChangedEvent(this);
             viewer.repaint();
         }
     }
 
     @FXML
-    private void create_predefined_sized_rectangular_selection(int width, int height, boolean inPixels) {
-        // On récupère l'instance actuelle de QuPathGUI et les données de l'image
+    private void create_predefined_sized_rectangular_selection() {
         QuPathGUI gui = QuPathGUI.getInstance();
         QuPathViewer viewer = gui.getViewer();
         ImageData<?> imageData = gui.getImageData();
 
         double widthInPixels, heightInPixels;
 
-        // Si les dimensions ne sont pas déjà en pixel alors on les convertit en pixels
-        if (inPixels) {
-            widthInPixels = width;
-            heightInPixels = height;
-        } else {
+        // dimensions are already in pixels
+        if (rectangular_selection_size_in_pixels) {
+            widthInPixels = rectangular_selection_width;
+            heightInPixels = rectangular_selection_height;
+        } else { // dimensions have to be converted from millimeters to pixels
             PixelCalibration cal = imageData.getServer().getPixelCalibration();
 
-            widthInPixels = (width / cal.getPixelWidthMicrons()) * 1000;
-            heightInPixels = (height / cal.getPixelHeightMicrons()) * 1000;
+            widthInPixels = (rectangular_selection_width / cal.getPixelWidthMicrons()) * 1000;
+            heightInPixels = (rectangular_selection_height / cal.getPixelHeightMicrons()) * 1000;
         }
 
+        // If the viewer exists
         if (viewer != null) {
-            // Définir la région masquée pour positionner le rectangle
-            // Utiliser toute l'image comme masque, vous pouvez l'ajuster selon vos besoins
-            ImageRegion mask = ImageRegion.createInstance(0, 0, (int) imageData.getServer().getWidth(), (int) imageData.getServer().getHeight(), 0, 0);
+            double centerX = viewer.getCenterPixelX();
+            double centerY = viewer.getCenterPixelY();
+            double x = centerX - widthInPixels / 2;
+            double y = centerY - heightInPixels / 2;
 
-            /*
-            // Créer un rectangle aléatoire dans le masque
-            try {
-                ROI rectangle = qupath.lib.roi.RoiTools.createRandomRectangle(mask, widthInPixels, heightInPixels);
-                PathAnnotationObject annotation = new PathAnnotationObject(rectangle);
+            /***** Ajouter la sélection rectangulaire ici ****/
 
-                // Ajouter l'annotation à l'image
-                imageData.getHierarchy().addPathObject(annotation);
-                gui.getViewer().repaint();
-            } catch (IllegalArgumentException e) {
-                System.err.println("Erreur lors de la création du rectangle : " + e.getMessage());
-            }*/
+            // Update the display
+            imageData.getHierarchy().fireHierarchyChangedEvent(this);
+            viewer.repaint();
         }
     }
 }
