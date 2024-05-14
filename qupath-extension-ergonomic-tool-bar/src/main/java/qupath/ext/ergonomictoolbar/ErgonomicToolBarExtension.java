@@ -1,5 +1,6 @@
 package qupath.ext.ergonomictoolbar;
 
+import javafx.application.Application;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.Property;
@@ -34,7 +35,7 @@ import java.io.IOException;
  *     /resources/META-INF/services/qupath.lib.gui.extensions.QuPathExtension
  * </pre>
  */
-public class ErgonomicToolBarExtension implements QuPathExtension, GitHubProject {
+public class ErgonomicToolBarExtension extends Application implements QuPathExtension, GitHubProject{
 	
 	private static final Logger logger = LoggerFactory.getLogger(ErgonomicToolBarExtension.class);
 
@@ -101,6 +102,13 @@ public class ErgonomicToolBarExtension implements QuPathExtension, GitHubProject
 	 * Create a stage for the extension to display
 	 */
 	private static Stage stage;
+
+
+	@Override
+	public void start(Stage primaryStage) throws Exception {
+
+	}
+
 
 	@Override
 	public void installExtension(QuPathGUI qupath) {
@@ -176,7 +184,6 @@ public class ErgonomicToolBarExtension implements QuPathExtension, GitHubProject
 	private void createStage() {
 		if (stage == null) {
 			try {
-
 				var url = InterfaceController.class.getResource("VerticalInterface.fxml");
 				FXMLLoader loader = new FXMLLoader(url);
 				stage = new Stage();
@@ -186,6 +193,9 @@ public class ErgonomicToolBarExtension implements QuPathExtension, GitHubProject
 				//stage.initStyle(StageStyle.DECORATED);
 				stage.initStyle(StageStyle.UTILITY);
 				stage.setAlwaysOnTop(true);
+
+				//TEST
+				//stage.focusedProperty().addListener(this::focusChanged);
 			} catch (IOException e) {
 				Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
 				logger.error("Unable to load extension interface FXML", e);
@@ -213,4 +223,6 @@ public class ErgonomicToolBarExtension implements QuPathExtension, GitHubProject
 	public GitHubRepo getRepository() {
 		return EXTENSION_REPOSITORY;
 	}
+
+
 }

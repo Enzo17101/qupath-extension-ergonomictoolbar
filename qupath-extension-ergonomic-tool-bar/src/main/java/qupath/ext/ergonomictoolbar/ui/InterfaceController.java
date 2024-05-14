@@ -36,6 +36,8 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
 
     private boolean is_Names_Display = true;
 
+    private boolean isFillingDisplay = true;
+
     /**
      * Logger user to save report the error into logs
      */
@@ -79,19 +81,6 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
         } catch (IOException e) {
             Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
         }
-    }
-
-
-    /**
-     * @return the stage rename annotation scene
-     */
-    public Stage getSharedRenameAnnotationStage() {
-        if (renameAnnotationStage == null) {
-            renameAnnotationStage = new Stage();
-            renameAnnotationStage.setResizable(false);
-            renameAnnotationStage.initStyle(StageStyle.UTILITY); // Change this as needed
-        }
-        return renameAnnotationStage;
     }
 
     @FXML
@@ -151,6 +140,17 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
         }
     }
 
+    /*
+     * Show or hide annotation filling
+     */
+    public void displayOrHideFilling()
+    {
+        isFillingDisplay = !isFillingDisplay;
+
+        QuPathGUI quPath_GUI = QuPathGUI.getInstance();
+        QuPathViewer viewer = quPath_GUI.getViewer();
+        viewer.getOverlayOptions().setFillAnnotations(isFillingDisplay);
+    }
     public InterfaceController() throws IOException {
 
         //Pour éviter les problèmes si aucune image n'est ouverte
@@ -182,5 +182,4 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
 
 
     }
-
 }

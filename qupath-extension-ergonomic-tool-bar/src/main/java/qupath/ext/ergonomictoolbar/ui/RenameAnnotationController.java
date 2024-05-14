@@ -36,6 +36,8 @@ public class RenameAnnotationController extends AnchorPane{
 
     @FXML
     void validateNewName() {
+        //Stage test = (Stage) nameTextField.getScene().getWindow();
+        //System.out.println("test : ");
         try
         {
             String newName = nameTextField.getText();
