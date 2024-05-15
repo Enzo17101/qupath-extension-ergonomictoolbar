@@ -31,6 +31,7 @@ import qupath.lib.scripting.QP;
 
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.*;
 
@@ -42,7 +43,6 @@ public class ModifyClassController implements Initializable {
 
     @FXML
     private Spinner<Integer> threadSpinner;
-
 
     @FXML
     private ComboBox<String> class_ComboBox;
@@ -61,39 +61,28 @@ public class ModifyClassController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         errorLabel.setText("");
 
-        // Récupération des classes de bases.
-        PathClass tumor_Class = StandardPathClasses.TUMOR;
-        PathClass stroma_Class = StandardPathClasses.STROMA;
-        PathClass immune_Cells_Class = StandardPathClasses.IMMUNE_CELLS;
-        PathClass necrosis_Class = StandardPathClasses.NECROSIS;
-        PathClass other_Class = StandardPathClasses.OTHER;
-        PathClass region_Class = StandardPathClasses.REGION;
-        PathClass ignore_Class = StandardPathClasses.IGNORE;
-        PathClass positive_Class = StandardPathClasses.POSITIVE;
-        PathClass negative_Class = StandardPathClasses.NEGATIVE;
-
-        // Créer une liste de noms de classes.
+        // We load all the classes from QuPath.
+        List<PathClass> path_Classes = QP.getProject().getPathClasses();
         List<String> class_Names = new ArrayList<>();
-        class_Names.add(tumor_Class.getName());
-        class_Names.add(stroma_Class.getName());
-        class_Names.add(immune_Cells_Class.getName());
-        class_Names.add(necrosis_Class.getName());
-        class_Names.add(other_Class.getName());
-        class_Names.add(region_Class.getName());
-        class_Names.add(ignore_Class.getName());
-        class_Names.add(positive_Class.getName());
-        class_Names.add(negative_Class.getName());
 
-        // Ajout les noms de classes à la ComboBox.
+        // We add the name of the classes.
+        for(PathClass path_Class : path_Classes){
+            class_Names.add(path_Class.getName());
+        }
+
+        // We add the names to the comboBox.
         class_ComboBox.setItems(FXCollections.observableArrayList(class_Names));
     }
 
-    // Méthode permettant la modification de la classe d'une annotation.
+    /**
+     * Method for modifying the class of an annotation.
+     * @param event Event that led to this method.
+     */
     @FXML
     void valide_New_Class(ActionEvent event) {
         PathObjectHierarchy hierarchy = QP.getCurrentHierarchy();
 
-        // On vérifie qu'une image a été ouverte.
+        // Check that an image has been opened.
         if(hierarchy == null) {
             errorLabel.setText("Aucun fichier n'est ouvert.");
         }
@@ -104,25 +93,24 @@ public class ModifyClassController implements Initializable {
             {
                 PathObject object = selectionModel.getSelectedObject();
 
-                // On vérifie qu'une annotation a été sélectionné.
+                // Check that an annotation has been selected.
                 if(object == null) {
                     errorLabel.setText("Aucune annotation n'est sélectionnée.");
                 }
                 else
                 {
-                    // On vérifie qu'une classe a bien été sélectionné.
+                    // We check that a class has been selected.
                     if(class_ComboBox.getValue() != null){
                         errorLabel.setText("");
 
-                        // Modification de la classe de l'annotation sélectionnée
+                        // Modify the class of the selected annotation.
                         object.setPathClass(PathClass.fromString(class_ComboBox.getValue()));
 
-                        // Actualisation des noms d'annotation dans QuPath
+                        // Update annotation names in QuPath.
                         QP.refreshIDs();
 
-                        // Pour fermer la fenêtre automatiquement une fois le nom de l'annotation actualisé
+                        // To close the window automatically once the annotation name has been updated
                         Stage stage = (Stage) class_ComboBox.getScene().getWindow();
-
                         stage.close();
                     }
 
