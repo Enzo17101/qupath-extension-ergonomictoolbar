@@ -43,7 +43,6 @@ public class InterfaceController extends VBox {
      */
     private static boolean currentOrientation = true;//vertical
 
-
     @FXML
     private void toggleToolbarOrientation() {
         boolean newOrientation = !currentOrientation;
@@ -61,8 +60,8 @@ public class InterfaceController extends VBox {
             currentOrientation = newOrientation;
 
             stage.setScene(scene);
+            stage.initStyle(StageStyle.UTILITY);
             stage.show();
-
         } catch (IOException e) {
             Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
         }
@@ -76,7 +75,7 @@ public class InterfaceController extends VBox {
         if (renameAnnotationStage == null) {
             renameAnnotationStage = new Stage();
             renameAnnotationStage.setResizable(false);
-            renameAnnotationStage.initStyle(StageStyle.UTILITY); // Change this as needed
+            //renameAnnotationStage.initStyle(StageStyle.UTILITY); // Change this as needed
         }
         return renameAnnotationStage;
     }
