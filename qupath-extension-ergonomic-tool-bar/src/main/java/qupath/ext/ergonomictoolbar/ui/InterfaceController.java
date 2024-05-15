@@ -3,6 +3,7 @@ package qupath.ext.ergonomictoolbar.ui;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -13,6 +14,7 @@ import qupath.ext.ergonomictoolbar.ErgonomicToolBarExtension;
 import qupath.fx.dialogs.Dialogs;
 import qupath.lib.gui.QuPathGUI;
 import qupath.lib.gui.viewer.QuPathViewer;
+import qupath.lib.scripting.QP;
 
 import java.io.IOException;
 import java.util.ResourceBundle;
@@ -104,7 +106,9 @@ public class InterfaceController extends VBox {
         }
     }
 
-    // Cette méthode permets d'afficher ou de cacher le nom de toutes les annotations en fonction de si elles le sont déjà ou non.
+    /**
+     * This method allows to display or hide names of all the annotations according to their current state.
+     */
     public void display_Or_Hide_Names() {
         is_Names_Display = !is_Names_Display;
 
@@ -113,6 +117,9 @@ public class InterfaceController extends VBox {
         viewer.getOverlayOptions().setShowNames(is_Names_Display);
     }
 
+    /**
+     * @return The stage set class annotation scene
+     */
     public Stage getSharedSetClassAnnotationStage() {
         if (set_Class_Annotation_Stage == null) {
             set_Class_Annotation_Stage = new Stage();
@@ -122,20 +129,41 @@ public class InterfaceController extends VBox {
         return set_Class_Annotation_Stage;
     }
 
+    /**
+     * This method allows to open the stage for set the class of an annotation.
+     * @throws IOException exception during the opening of a stage.
+     */
     public void set_Class_Annotation_Stage() throws IOException {
 
+        QP quPathApplication;
+
+        // We check if the stage is null or not in order to not display it twice.
         if (set_Class_Annotation_Stage == null) {
-            try {
-                var url = InterfaceController.class.getResource("ModifyClass.fxml");
-                FXMLLoader loader = new FXMLLoader(url);
-                set_Class_Annotation_Stage = new Stage();
-                Scene scene = new Scene(loader.load());
-                set_Class_Annotation_Stage.setScene(scene);
-                set_Class_Annotation_Stage.setAlwaysOnTop(true);
-                set_Class_Annotation_Stage.show();
-            } catch (IOException e) {
-                Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
-                logger.error("Unable to load extension interface FXML", e);
+
+            // We check if a project is opened or not.
+            if(QP.getProject() != null ){
+                try {
+                    // We opened the stage.
+                    var url = InterfaceController.class.getResource("ModifyClass.fxml");
+                    FXMLLoader loader = new FXMLLoader(url);
+                    set_Class_Annotation_Stage = new Stage();
+                    Scene scene = new Scene(loader.load());
+                    set_Class_Annotation_Stage.setScene(scene);
+                    set_Class_Annotation_Stage.setAlwaysOnTop(true);
+                    set_Class_Annotation_Stage.show();
+                } catch (IOException e) {
+                    Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
+                    logger.error("Unable to load extension interface FXML", e);
+                }
+            }
+            // If there is no project we display an error message.
+            else {
+                System.out.println("Pas de projet");
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Erreur projet");
+                alert.setHeaderText(null);
+                alert.setContentText("Pour pouvoir utiliser cette fonctionnalité il faut qu'un projet soit ouvert.");
+                alert.showAndWait();
             }
         }
         else if(!set_Class_Annotation_Stage.isShowing())
