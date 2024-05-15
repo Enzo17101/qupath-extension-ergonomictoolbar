@@ -195,7 +195,8 @@ public class ErgonomicToolBarExtension implements QuPathExtension, GitHubProject
 				stage.setScene(scene);
 				stage.setResizable(false);
 				stage.initStyle(StageStyle.UTILITY);
-				initSetAlwaysOnTop();
+				//stage.setAlwaysOnTop(true);
+
 			} catch (IOException e) {
 				Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
 				logger.error("Unable to load extension interface FXML", e);
