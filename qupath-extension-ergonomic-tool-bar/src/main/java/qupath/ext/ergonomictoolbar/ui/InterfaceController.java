@@ -94,6 +94,7 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
                 Scene scene = new Scene(loader.load());
                 renameAnnotationStage.setScene(scene);
                 renameAnnotationStage.setAlwaysOnTop(true);
+                renameAnnotationStage.setResizable(false);
                 renameAnnotationStage.show();
             }
             else if (!renameAnnotationStage.isShowing()) {
