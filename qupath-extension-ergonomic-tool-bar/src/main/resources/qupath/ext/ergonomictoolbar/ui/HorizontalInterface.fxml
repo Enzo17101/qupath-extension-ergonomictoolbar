@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.image.Image?>
@@ -15,7 +10,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="70.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="qupath.ext.ergonomictoolbar.ui.InterfaceController">
+<AnchorPane prefHeight="70.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="qupath.ext.ergonomictoolbar.ui.InterfaceController">
    <children>
       <HBox alignment="CENTER" prefHeight="80.0" prefWidth="883.0" spacing="10.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -105,7 +100,12 @@
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Text>
-                  <Text fx:id="areaLabel" strokeType="OUTSIDE" strokeWidth="0.0" text="X mm²" textAlignment="CENTER" wrappingWidth="55.0">
+                  <Text fx:id="areaLabel" strokeType="OUTSIDE" strokeWidth="0.0" text="X" textAlignment="CENTER" wrappingWidth="50.0">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Text>
+                  <Text fx:id="areaLabel1" layoutX="10.0" layoutY="50.0" strokeType="OUTSIDE" strokeWidth="0.0" text="mm²" textAlignment="CENTER" wrappingWidth="50.0">
                      <font>
                         <Font size="14.0" />
                      </font>
