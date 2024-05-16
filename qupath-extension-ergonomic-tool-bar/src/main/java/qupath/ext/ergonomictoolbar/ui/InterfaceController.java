@@ -30,6 +30,8 @@ import static java.lang.Math.round;
 import static qupath.lib.gui.scripting.QPEx.getQuPath;
 import static qupath.lib.scripting.QP.*;
 import qupath.lib.gui.commands.Commands;
+import qupath.lib.scripting.QP;
+
 import java.util.ResourceBundle;
 
 /**
@@ -79,6 +81,14 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
             stage.setScene(scene);
             stage.initStyle(StageStyle.UTILITY);
             stage.show();
+
+            if(QP.getCurrentHierarchy() != null)
+            {
+                if(QP.getCurrentHierarchy().getSelectionModel().getSelectedObject() != null)
+                {
+                    QP.getCurrentHierarchy().getSelectionModel().setSelectedObject(QP.getCurrentHierarchy().getSelectionModel().getSelectedObject());
+                }
+            }
         } catch (IOException e) {
             Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
         }
