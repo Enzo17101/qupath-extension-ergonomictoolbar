@@ -171,11 +171,17 @@ public class InterfaceController extends VBox {
 
         // If the viewer exists
         if (viewer != null) {
-            // Get the predefined POLYGON tool
-            PathTool polygonTool = PathTools.POLYGON;
+            // If you are already set to the polygon ROI tool
+            if (viewer.getActiveTool() == PathTools.POLYGON) {
+                // Switch to the move tool
+                viewer.setActiveTool(PathTools.MOVE);
+            } else { // Otherwise
+                // Get the predefined POLYGON tool
+                PathTool polygonTool = PathTools.POLYGON;
 
-            // Set the active tool to the polygon ROI tool
-            viewer.setActiveTool(polygonTool);
+                // Set the active tool to the polygon ROI tool
+                viewer.setActiveTool(polygonTool);
+            }
         }
     }
 
@@ -191,11 +197,17 @@ public class InterfaceController extends VBox {
 
         // If the viewer exists
         if (viewer != null) {
-            // Get the predefined RECTANGLE tool
-            PathTool rectangleTool = PathTools.RECTANGLE;
+            // If you are already set to the rectangle ROI tool
+            if (viewer.getActiveTool() == PathTools.RECTANGLE) {
+                // Switch to the move tool
+                viewer.setActiveTool(PathTools.MOVE);
+            } else { // Otherwise
+                // Get the predefined RECTANGLE tool
+                PathTool rectangleTool = PathTools.RECTANGLE;
 
-            // Set the active tool to the rectangle ROI tool
-            viewer.setActiveTool(rectangleTool);
+                // Set the active tool to the rectangle ROI tool
+                viewer.setActiveTool(rectangleTool);
+            }
         }
     }
 
@@ -243,7 +255,7 @@ public class InterfaceController extends VBox {
             PathObject annotation = PathObjects.createAnnotationObject(rectangleROI);
 
             // Add the annotation to the image
-            imageData.getHierarchy().addPathObject(annotation);
+            imageData.getHierarchy().addObject(annotation);
 
             // Update the display
             imageData.getHierarchy().fireHierarchyChangedEvent(this);
