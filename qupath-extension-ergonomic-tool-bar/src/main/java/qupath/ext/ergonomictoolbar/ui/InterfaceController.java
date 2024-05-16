@@ -146,31 +146,6 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
     }
 
 
-    @FXML
-    private void toggleLockAnnotation() {
-        QuPathGUI quPathGUI = QuPathGUI.getInstance();
-        QuPathViewer viewer = quPathGUI.getViewer();
-        if (viewer != null && viewer.getSelectedObject() != null) {
-            var selectedObject = viewer.getSelectedObject();
-            boolean isCurrentlyLocked = selectedObject.isLocked();
-            selectedObject.setLocked(!isCurrentlyLocked);
-
-            // Forcer la mise à jour de l'annotation pour refléter le changement dans l'interface utilisateur
-            if (viewer.getHierarchy() != null) {
-                viewer.getHierarchy().fireHierarchyChangedEvent(selectedObject);
-            }
-        } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setHeaderText("Annotation Lock Error");
-            alert.setContentText("No annotation is selected.");
-            alert.showAndWait();
-        }
-    }
-
-
-
-
-
 
     /**
      * Return area when annotations have been selected
@@ -256,9 +231,4 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
             alert.showAndWait();
         }
     }
-
-
-
-
-
 }
