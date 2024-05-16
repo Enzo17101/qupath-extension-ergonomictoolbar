@@ -15,11 +15,13 @@ import qupath.ext.ergonomictoolbar.ErgonomicToolBarExtension;
 import qupath.fx.dialogs.Dialogs;
 import qupath.lib.gui.QuPathGUI;
 import qupath.lib.gui.measure.ObservableMeasurementTableData;
+import qupath.lib.gui.viewer.QuPathViewerListener;
 import qupath.lib.images.ImageData;
 import qupath.lib.objects.PathObject;
 import qupath.lib.objects.hierarchy.events.PathObjectSelectionListener;
 import qupath.lib.gui.viewer.QuPathViewer;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Collection;
@@ -34,7 +36,7 @@ import java.util.ResourceBundle;
  * Controller for UI pane contained in interface.fxml
  */
 
-public class InterfaceController extends VBox implements PathObjectSelectionListener{
+public class InterfaceController extends VBox implements PathObjectSelectionListener, QuPathViewerListener {
 
     public Text my_Label;
     private boolean is_Names_Display = true;
@@ -106,7 +108,6 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
                 renameAnnotationStage.setScene(scene);
                 renameAnnotationStage.initStyle(StageStyle.UTILITY);
                 renameAnnotationStage.setResizable(false);
-                //renameAnnotationStage.setAlwaysOnTop(true);
                 initRenameAnnotationSetAlwaysOnTop();
                 renameAnnotationStage.show();
             }
@@ -145,8 +146,6 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
         viewer.getOverlayOptions().setShowNames(is_Names_Display);
     }
 
-
-
     /**
      * Return area when annotations have been selected
      */
@@ -182,16 +181,12 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
     }
 
     public InterfaceController() throws IOException {
-
-        //Pour éviter les problèmes si aucune image n'est ouverte
-        //Demandera de rafraichir l'extension (en changeant l'orientation par exemple)
-        if(getQuPath() != null){
+        if(getQuPath() != null) {
+            getQuPath().getViewer().addViewerListener(this);
             if(getQuPath().getImageData() != null){
-                getQuPath().getImageData().getHierarchy().getSelectionModel().addPathObjectSelectionListener(this);
+                 getQuPath().getImageData().getHierarchy().getSelectionModel().addPathObjectSelectionListener(this);
             }
-
         }
-
     }
 
     public static InterfaceController createInstance() throws IOException {
@@ -208,6 +203,40 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
                 Commands.promptToSaveImageData(getQuPath(),getQuPath().getImageData(),true);
             }
         }
+    }
+
+    @Override
+    public void imageDataChanged(QuPathViewer viewer, ImageData<BufferedImage> imageDataOld, ImageData<BufferedImage> imageDataNew) {
+
+        getQuPath().getImageData().getHierarchy().getSelectionModel().removePathObjectSelectionListener(this);
+
+        //Pour éviter les problèmes si aucune image n'est ouverte
+        //Demandera de rafraichir l'extension (en changeant l'orientation par exemple)
+        if(getQuPath() != null){
+            if(getQuPath().getImageData() != null){
+
+                getQuPath().getImageData().getHierarchy().getSelectionModel().addPathObjectSelectionListener(this);
+            }
+
+        }
+    }
+
+    //We herit from an abstract class so we have to define those methods
+    @Override
+    public void visibleRegionChanged(QuPathViewer viewer, Shape shape) {
+
+    }
+
+    //We herit from an abstract class so we have to define those methods
+    @Override
+    public void selectedObjectChanged(QuPathViewer viewer, PathObject pathObjectSelected) {
+
+    }
+
+    //We herit from an abstract class so we have to define those methods
+    @Override
+    public void viewerClosed(QuPathViewer viewer) {
+
     }
 
 
