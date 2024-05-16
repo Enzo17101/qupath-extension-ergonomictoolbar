@@ -210,7 +210,6 @@ public class ErgonomicToolBarExtension implements QuPathExtension, GitHubProject
 	 */
 	public void initSetAlwaysOnTop()
 	{
-
 		Stage quPathStage = QuPathGUI.getInstance().getStage();
 
 		quPathStage.focusedProperty().addListener((observableValue, onHidden, onShown) -> {

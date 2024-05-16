@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qupath.ext.ergonomictoolbar.ErgonomicToolBarExtension;
 import qupath.fx.dialogs.Dialogs;
+import qupath.lib.gui.QuPathGUI;
 import qupath.lib.objects.PathObject;
 import qupath.lib.objects.hierarchy.PathObjectHierarchy;
 import qupath.lib.objects.hierarchy.events.PathObjectSelectionModel;

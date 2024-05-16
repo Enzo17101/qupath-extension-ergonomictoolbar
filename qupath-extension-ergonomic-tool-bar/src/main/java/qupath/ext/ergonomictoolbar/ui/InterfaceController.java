@@ -103,7 +103,10 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
                 renameAnnotationStage = new Stage();
                 Scene scene = new Scene(loader.load());
                 renameAnnotationStage.setScene(scene);
-                renameAnnotationStage.setAlwaysOnTop(true);
+                renameAnnotationStage.initStyle(StageStyle.UTILITY);
+                renameAnnotationStage.setResizable(false);
+                //renameAnnotationStage.setAlwaysOnTop(true);
+                initRenameAnnotationSetAlwaysOnTop();
                 renameAnnotationStage.show();
             }
             else if (!renameAnnotationStage.isShowing()) {
@@ -114,6 +117,22 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
             Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
             logger.error("Unable to load extension interface FXML", e);
         }
+    }
+
+    public void initRenameAnnotationSetAlwaysOnTop()
+    {
+        Stage quPathStage = QuPathGUI.getInstance().getStage();
+
+        quPathStage.focusedProperty().addListener((observableValue, onHidden, onShown) -> {
+            if(onHidden || renameAnnotationStage.isFocused())
+            {
+                renameAnnotationStage.setAlwaysOnTop(false);
+            }
+            if(onShown)
+            {
+                renameAnnotationStage.setAlwaysOnTop(true);
+            }
+        });
     }
 
     // Cette méthode permets d'afficher ou de cacher le nom de toutes les annotations en fonction de si elles le sont déjà ou non.
