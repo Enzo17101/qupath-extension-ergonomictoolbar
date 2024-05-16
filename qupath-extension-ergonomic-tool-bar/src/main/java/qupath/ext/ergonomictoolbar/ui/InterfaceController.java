@@ -38,7 +38,8 @@ import java.util.ResourceBundle;
 
 public class InterfaceController extends VBox implements PathObjectSelectionListener, QuPathViewerListener {
 
-    public Text my_Label;
+    public Text areaLabel;
+    public Text areaLabel1;
     private boolean is_Names_Display = true;
 
     /**
@@ -153,7 +154,9 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
     public void selectedPathObjectChanged(PathObject pathObjectSelected, PathObject previousObject, Collection<PathObject> allSelected) {
 
         if (pathObjectSelected == null){
-            my_Label.setText("...");
+            areaLabel.setText("...");
+            areaLabel1.setText("");
+            System.out.println("...");
         }
         else {
             // Here goes your selection change logic
@@ -176,7 +179,9 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
                 magnitude = " mm²";
             }
 
-            my_Label.setText( aire + magnitude);
+            areaLabel.setText(String.valueOf(aire));
+            areaLabel1.setText(magnitude);
+            System.out.println(aire);
         }
     }
 
@@ -208,13 +213,13 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
     @Override
     public void imageDataChanged(QuPathViewer viewer, ImageData<BufferedImage> imageDataOld, ImageData<BufferedImage> imageDataNew) {
 
-        getQuPath().getImageData().getHierarchy().getSelectionModel().removePathObjectSelectionListener(this);
+
 
         //Pour éviter les problèmes si aucune image n'est ouverte
         //Demandera de rafraichir l'extension (en changeant l'orientation par exemple)
         if(getQuPath() != null){
             if(getQuPath().getImageData() != null){
-
+                getQuPath().getImageData().getHierarchy().getSelectionModel().removePathObjectSelectionListener(this);
                 getQuPath().getImageData().getHierarchy().getSelectionModel().addPathObjectSelectionListener(this);
             }
 
