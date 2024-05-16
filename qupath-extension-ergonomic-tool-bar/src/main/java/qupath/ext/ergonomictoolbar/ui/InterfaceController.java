@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.slf4j.Logger;
@@ -12,17 +13,29 @@ import org.slf4j.LoggerFactory;
 import qupath.ext.ergonomictoolbar.ErgonomicToolBarExtension;
 import qupath.fx.dialogs.Dialogs;
 import qupath.lib.gui.QuPathGUI;
+import qupath.lib.gui.measure.ObservableMeasurementTableData;
+import qupath.lib.images.ImageData;
+import qupath.lib.objects.PathObject;
+import qupath.lib.objects.hierarchy.events.PathObjectSelectionListener;
 import qupath.lib.gui.viewer.QuPathViewer;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Collection;
+
+import static java.lang.Math.round;
+import static qupath.lib.gui.scripting.QPEx.getQuPath;
+import static qupath.lib.scripting.QP.*;
+import qupath.lib.gui.commands.Commands;
 import java.util.ResourceBundle;
 
 /**
  * Controller for UI pane contained in interface.fxml
  */
 
-public class InterfaceController extends VBox {
+public class InterfaceController extends VBox implements PathObjectSelectionListener{
 
+    public Text my_Label;
     private boolean is_Names_Display = true;
 
     /**
@@ -75,7 +88,7 @@ public class InterfaceController extends VBox {
         if (renameAnnotationStage == null) {
             renameAnnotationStage = new Stage();
             renameAnnotationStage.setResizable(false);
-            //renameAnnotationStage.initStyle(StageStyle.UTILITY); // Change this as needed
+            renameAnnotationStage.initStyle(StageStyle.UTILITY); // Change this as needed
         }
         return renameAnnotationStage;
     }
@@ -110,5 +123,68 @@ public class InterfaceController extends VBox {
         QuPathGUI quPath_GUI = QuPathGUI.getInstance();
         QuPathViewer viewer = quPath_GUI.getViewer();
         viewer.getOverlayOptions().setShowNames(is_Names_Display);
+    }
+
+    /**
+     * Return area when annotations have been selected
+     */
+    @Override
+    public void selectedPathObjectChanged(PathObject pathObjectSelected, PathObject previousObject, Collection<PathObject> allSelected) {
+
+        if (pathObjectSelected == null){
+            my_Label.setText("...");
+        }
+        else {
+            // Here goes your selection change logic
+            ImageData<BufferedImage> imageData = getCurrentImageData();
+
+            Collection<PathObject> tissues = getAnnotationObjects();
+            ObservableMeasurementTableData ob = new ObservableMeasurementTableData();
+            ob.setImageData(imageData, tissues);
+            String area = "Area µm^2";
+            double annotationArea = ob.getNumericValue(getCurrentHierarchy().getSelectionModel().getSelectedObject(), area);
+            String magnitude;
+            double aire;
+            if (annotationArea < 10000){
+                aire = (double) round(annotationArea*100)/100;
+                magnitude = " μm²";
+            }
+            else{
+                double roundArea = (double) round(annotationArea/1000)*1000;
+                aire= roundArea / 1000000;
+                magnitude = " mm²";
+            }
+
+            my_Label.setText( aire + magnitude);
+        }
+    }
+
+    public InterfaceController() throws IOException {
+
+        //Pour éviter les problèmes si aucune image n'est ouverte
+        //Demandera de rafraichir l'extension (en changeant l'orientation par exemple)
+        if(getQuPath() != null){
+            if(getQuPath().getImageData() != null){
+                getQuPath().getImageData().getHierarchy().getSelectionModel().addPathObjectSelectionListener(this);
+            }
+
+        }
+
+    }
+
+    public static InterfaceController createInstance() throws IOException {
+        return new InterfaceController();
+    }
+
+    /**
+     * Sauvegarde l'image actuelle
+     */
+    public void save_Project(){
+
+        if(getQuPath() != null) {
+            if (getQuPath().getImageData() != null) {
+                Commands.promptToSaveImageData(getQuPath(),getQuPath().getImageData(),true);
+            }
+        }
     }
 }
