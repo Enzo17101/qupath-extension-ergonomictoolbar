@@ -55,7 +55,7 @@
                   <Font size="10.0" />
                </font>
             </Button>
-            <Button maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;">
+            <Button fx:id="lockUnlockButton" text="Toggle Lock" onAction="#toggleLockAnnotation" maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;">
                <graphic>
                   <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true">
                      <image>
