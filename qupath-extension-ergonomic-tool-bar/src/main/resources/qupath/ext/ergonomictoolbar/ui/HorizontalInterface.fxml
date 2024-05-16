@@ -33,7 +33,7 @@
             </Button>
             <VBox alignment="CENTER" prefHeight="70.0" prefWidth="70.0">
                <children>
-                  <Button maxHeight="40.0" maxWidth="60.0" minHeight="40.0" minWidth="60.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="60.0" style="-fx-background-color: white;">
+                  <Button maxHeight="40.0" maxWidth="60.0" minHeight="40.0" minWidth="60.0" mnemonicParsing="false" onAction="#createPredefinedSizedRectangularROI" prefHeight="40.0" prefWidth="60.0" style="-fx-background-color: white;">
                      <graphic>
                         <ImageView fitHeight="40.0" fitWidth="60.0" pickOnBounds="true">
                            <image>
@@ -51,7 +51,7 @@
                   <ImageView pickOnBounds="true" preserveRatio="true" />
                </graphic>
             </Button>
-            <Button layoutX="513.0" layoutY="15.0" maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#lock_Or_Unlock_Selection" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;">
+            <Button layoutX="513.0" layoutY="15.0" maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#lockUnlockROI" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;">
                <graphic>
                   <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true">
                      <image>

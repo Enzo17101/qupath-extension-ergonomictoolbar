@@ -1,11 +1,12 @@
 package qupath.ext.ergonomictoolbar.ui;
 
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.slf4j.Logger;
@@ -14,13 +15,15 @@ import qupath.ext.ergonomictoolbar.ErgonomicToolBarExtension;
 import qupath.fx.dialogs.Dialogs;
 import qupath.lib.gui.QuPathGUI;
 import qupath.lib.gui.viewer.QuPathViewer;
-import qupath.lib.objects.PathObject;
+import qupath.lib.gui.viewer.tools.handlers.PathToolEventHandlers;
 import qupath.lib.objects.PathAnnotationObject;
+import qupath.lib.objects.PathObject;
+import qupath.lib.objects.PathObjects;
+import qupath.lib.regions.ImagePlane;
 import qupath.lib.regions.ImageRegion;
-import qupath.lib.roi.RectangleROI;
+import qupath.lib.roi.ROIs;
 import qupath.lib.images.ImageData;
 import qupath.lib.images.servers.PixelCalibration;
-import qupath.lib.roi.RoiTools;
 import qupath.lib.roi.interfaces.ROI;
 
 import java.io.IOException;
@@ -34,7 +37,7 @@ public class InterfaceController extends VBox {
 
     private boolean is_Names_Display = true;
 
-    private int rectangular_selection_width = 200;
+    private int rectangular_selection_width = 100;
     private int rectangular_selection_height = 100;
     private boolean rectangular_selection_size_in_pixels = true;
 
@@ -128,7 +131,7 @@ public class InterfaceController extends VBox {
 
     // Cette méthode permet de verrouiller ou déverouiller une annotation
     @FXML
-    private void lock_Or_Unlock_Selection() {
+    private void lockUnlockROI() {
         QuPathGUI gui = QuPathGUI.getInstance();
         QuPathViewer viewer = gui.getViewer();
         ImageData<?> imageData = gui.getImageData();
@@ -151,12 +154,12 @@ public class InterfaceController extends VBox {
     }
 
     @FXML
-    private void create_predefined_sized_rectangular_selection() {
+    private void createPredefinedSizedRectangularROI() {
         QuPathGUI gui = QuPathGUI.getInstance();
         QuPathViewer viewer = gui.getViewer();
         ImageData<?> imageData = gui.getImageData();
 
-        double widthInPixels, heightInPixels;
+        int widthInPixels, heightInPixels;
 
         // dimensions are already in pixels
         if (rectangular_selection_size_in_pixels) {
@@ -165,19 +168,32 @@ public class InterfaceController extends VBox {
         } else { // dimensions have to be converted from millimeters to pixels
             PixelCalibration cal = imageData.getServer().getPixelCalibration();
 
-            widthInPixels = (rectangular_selection_width / cal.getPixelWidthMicrons()) * 1000;
-            heightInPixels = (rectangular_selection_height / cal.getPixelHeightMicrons()) * 1000;
+            widthInPixels = (rectangular_selection_width / (int)cal.getPixelWidthMicrons()) * 1000;
+            heightInPixels = (rectangular_selection_height / (int)cal.getPixelHeightMicrons()) * 1000;
         }
 
         // If the viewer exists
         if (viewer != null) {
-            double centerX = viewer.getCenterPixelX();
-            double centerY = viewer.getCenterPixelY();
-            double x = centerX - widthInPixels / 2;
-            double y = centerY - heightInPixels / 2;
+            // Coordonnées du centre du viewer
+            int centerX = (int)viewer.getCenterPixelX();
+            int centerY = (int)viewer.getCenterPixelY();
 
-            /***** Ajouter la sélection rectangulaire ici ****/
+            // Calculer les coordonnées de départ du rectangle
+            int x = centerX - widthInPixels / 2;
+            int y = centerY - heightInPixels / 2;
+            /*
+            // Créer une instance de ImageRegion
+            ImageRegion imageRegion = ImageRegion.createInstance(x, y, widthInPixels, heightInPixels, 0, 0);
 
+            // Utiliser la méthode createRectangleROI pour créer le ROI
+            ROI rectangleROI = ROIs.createRectangleROI(imageRegion);
+
+            // Créer l'annotation à partir du ROI
+            PathObject annotation = PathObjects.createAnnotationObject(rectangleROI);
+
+            // Ajouter l'annotation à l'image
+            imageData.getHierarchy().addPathObject(annotation);
+            */
             // Update the display
             imageData.getHierarchy().fireHierarchyChangedEvent(this);
             viewer.repaint();
