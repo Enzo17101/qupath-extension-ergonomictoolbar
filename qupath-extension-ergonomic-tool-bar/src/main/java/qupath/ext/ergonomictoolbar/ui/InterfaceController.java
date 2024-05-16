@@ -13,8 +13,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qupath.ext.ergonomictoolbar.ErgonomicToolBarExtension;
 import qupath.fx.dialogs.Dialogs;
+import qupath.lib.gui.QuPathApp;
 import qupath.lib.gui.QuPathGUI;
 import qupath.lib.gui.viewer.QuPathViewer;
+import qupath.lib.gui.viewer.tools.PathTool;
+import qupath.lib.gui.viewer.tools.PathTools;
 import qupath.lib.gui.viewer.tools.handlers.PathToolEventHandlers;
 import qupath.lib.objects.PathAnnotationObject;
 import qupath.lib.objects.PathObject;
@@ -37,8 +40,8 @@ public class InterfaceController extends VBox {
 
     private boolean is_Names_Display = true;
 
-    private int rectangular_selection_width = 100;
-    private int rectangular_selection_height = 100;
+    private int rectangular_selection_width = 10000;
+    private int rectangular_selection_height = 10000;
     private boolean rectangular_selection_size_in_pixels = true;
 
     /**
@@ -129,14 +132,17 @@ public class InterfaceController extends VBox {
         viewer.getOverlayOptions().setShowNames(is_Names_Display);
     }
 
-    // Cette méthode permet de verrouiller ou déverouiller une annotation
+    /**
+     * This method locks or unlocks the currently selected ROI (Region of Interest).
+     * It toggles the lock status of the selected annotation in the viewer.
+     */
     @FXML
     private void lockUnlockROI() {
         QuPathGUI gui = QuPathGUI.getInstance();
         QuPathViewer viewer = gui.getViewer();
         ImageData<?> imageData = gui.getImageData();
 
-        // if the viewer exists and an object is currently selected
+        // If the viewer exists and an object is currently selected
         if (viewer != null && viewer.getSelectedObject() != null) {
             // Get the currently selected object
             PathObject selectedObject = viewer.getSelectedObject();
@@ -153,50 +159,99 @@ public class InterfaceController extends VBox {
         }
     }
 
+    /**
+     * This method activates the tool to create a polygon ROI (Region of Interest) in the viewer.
+     * It sets the active tool to the predefined polygon tool.
+     */
+    @FXML
+    private void createPolygonROI() {
+        // Get the current instance of QuPathGUI
+        QuPathGUI gui = QuPathGUI.getInstance();
+        QuPathViewer viewer = gui.getViewer();
+
+        // If the viewer exists
+        if (viewer != null) {
+            // Get the predefined POLYGON tool
+            PathTool polygonTool = PathTools.POLYGON;
+
+            // Set the active tool to the polygon ROI tool
+            viewer.setActiveTool(polygonTool);
+        }
+    }
+
+    /**
+     * This method activates the tool to create a rectangular ROI (Region of Interest) in the viewer.
+     * It sets the active tool to the predefined rectangle tool.
+     */
+    @FXML
+    private void createRectangleROI() {
+        // Get the current instance of QuPathGUI
+        QuPathGUI gui = QuPathGUI.getInstance();
+        QuPathViewer viewer = gui.getViewer();
+
+        // If the viewer exists
+        if (viewer != null) {
+            // Get the predefined RECTANGLE tool
+            PathTool rectangleTool = PathTools.RECTANGLE;
+
+            // Set the active tool to the rectangle ROI tool
+            viewer.setActiveTool(rectangleTool);
+        }
+    }
+
+    /**
+     * This method creates a rectangular ROI (Region of Interest) with predefined dimensions.
+     * It calculates the rectangle's dimensions in pixels, centers it in the viewer,
+     * and creates an annotation with the specified size.
+     */
     @FXML
     private void createPredefinedSizedRectangularROI() {
         QuPathGUI gui = QuPathGUI.getInstance();
         QuPathViewer viewer = gui.getViewer();
         ImageData<?> imageData = gui.getImageData();
 
-        int widthInPixels, heightInPixels;
+        // If the image data exists
+        if (imageData != null) {
+            // Dimensions of the rectangle
+            int widthInPixels, heightInPixels;
 
-        // dimensions are already in pixels
-        if (rectangular_selection_size_in_pixels) {
-            widthInPixels = rectangular_selection_width;
-            heightInPixels = rectangular_selection_height;
-        } else { // dimensions have to be converted from millimeters to pixels
-            PixelCalibration cal = imageData.getServer().getPixelCalibration();
+            // If dimensions are already in pixels
+            if (rectangular_selection_size_in_pixels) {
+                widthInPixels = rectangular_selection_width;
+                heightInPixels = rectangular_selection_height;
+            } else { // Convert dimensions from millimeters to pixels
+                PixelCalibration cal = imageData.getServer().getPixelCalibration();
+                widthInPixels = (rectangular_selection_width / (int)cal.getPixelWidthMicrons()) * 1000;
+                heightInPixels = (rectangular_selection_height / (int)cal.getPixelHeightMicrons()) * 1000;
+            }
 
-            widthInPixels = (rectangular_selection_width / (int)cal.getPixelWidthMicrons()) * 1000;
-            heightInPixels = (rectangular_selection_height / (int)cal.getPixelHeightMicrons()) * 1000;
-        }
-
-        // If the viewer exists
-        if (viewer != null) {
-            // Coordonnées du centre du viewer
+            // Coordinates of the center of the viewer
             int centerX = (int)viewer.getCenterPixelX();
             int centerY = (int)viewer.getCenterPixelY();
 
-            // Calculer les coordonnées de départ du rectangle
+            // Calculate the starting coordinates of the rectangle
             int x = centerX - widthInPixels / 2;
             int y = centerY - heightInPixels / 2;
-            /*
-            // Créer une instance de ImageRegion
+
+            // Create an instance of ImageRegion
             ImageRegion imageRegion = ImageRegion.createInstance(x, y, widthInPixels, heightInPixels, 0, 0);
 
-            // Utiliser la méthode createRectangleROI pour créer le ROI
+            // Use the createRectangleROI method to create the ROI
             ROI rectangleROI = ROIs.createRectangleROI(imageRegion);
 
-            // Créer l'annotation à partir du ROI
+            // Create an annotation from the ROI
             PathObject annotation = PathObjects.createAnnotationObject(rectangleROI);
 
-            // Ajouter l'annotation à l'image
+            // Add the annotation to the image
             imageData.getHierarchy().addPathObject(annotation);
-            */
+
             // Update the display
             imageData.getHierarchy().fireHierarchyChangedEvent(this);
             viewer.repaint();
+        } else {
+            // If no image data, set the active tool to MOVE
+            PathTool moveTool = PathTools.MOVE;
+            viewer.setActiveTool(moveTool);
         }
     }
 }
