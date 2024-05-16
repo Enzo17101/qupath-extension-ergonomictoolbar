@@ -11,9 +11,9 @@
 
 <AnchorPane maxHeight="600.0" maxWidth="65.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="65.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="qupath.ext.ergonomictoolbar.ui.InterfaceController">
    <children>
-      <VBox alignment="CENTER" layoutX="-10.0" layoutY="120.0" prefHeight="600.0" prefWidth="65.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <VBox alignment="CENTER" layoutX="-10.0" layoutY="120.0" prefHeight="610.0" prefWidth="65.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Button maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;">
+            <Button alignment="CENTER" maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;">
                <graphic>
                   <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true">
                      <image>
@@ -31,7 +31,7 @@
                   </ImageView>
                </graphic>
             </Button>
-            <VBox alignment="CENTER" prefHeight="80.0" prefWidth="80.0">
+            <VBox alignment="CENTER" prefWidth="80.0">
                <children>
                   <Button maxHeight="40.0" maxWidth="50.0" minHeight="40.0" minWidth="50.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="50.0" style="-fx-background-color: white;">
                      <graphic>
@@ -91,16 +91,25 @@
                   </ImageView>
                </graphic>
             </Button>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Aire :" textAlignment="CENTER" wrappingWidth="70.0">
-               <font>
-                  <Font name="System Bold" size="14.0" />
-               </font>
-            </Text>
-            <Text fx:id="my_Label" strokeType="OUTSIDE" strokeWidth="0.0" text="X mm²" textAlignment="CENTER" wrappingWidth="70.0">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </Text>
+            <VBox prefHeight="55.0" prefWidth="65.0">
+               <children>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Aire :" textAlignment="CENTER" wrappingWidth="65.0">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Text>
+                  <Text fx:id="areaLabel" strokeType="OUTSIDE" strokeWidth="0.0" text="..." textAlignment="CENTER" wrappingWidth="65.0">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Text>
+                  <Text fx:id="areaLabel1" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="65.0">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Text>
+               </children>
+            </VBox>
             <Button maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;">
                <graphic>
                   <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true">
