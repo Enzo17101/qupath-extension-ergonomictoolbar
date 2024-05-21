@@ -187,9 +187,9 @@ public class ErgonomicToolBarExtension implements QuPathExtension, GitHubProject
 	private void createStage() {
 		if (stage == null) {
 			try {
-
 				var url = InterfaceController.class.getResource("VerticalInterface.fxml");
 				FXMLLoader loader = new FXMLLoader(url);
+				loader.setController(new InterfaceController());
 				stage = new Stage();
 				Scene scene = new Scene(loader.load());
 				stage.setScene(scene);
@@ -200,7 +200,6 @@ public class ErgonomicToolBarExtension implements QuPathExtension, GitHubProject
 			} catch (IOException e) {
 				Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
 				logger.error("Unable to load extension interface FXML", e);
-
 			}
 		}
 		stage.show();

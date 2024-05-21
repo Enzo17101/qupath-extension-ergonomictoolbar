@@ -67,13 +67,15 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
         boolean newOrientation = !currentOrientation;
         String fxmlPath = "/qupath/ext/ergonomictoolbar/ui/" + (newOrientation ? "VerticalInterface.fxml" : "HorizontalInterface.fxml");
 
-        //Recreate the extension with the new orientation
-        Stage stage = ErgonomicToolBarExtension.getSharedStage(newOrientation);
-
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
         try {
-            AnchorPane mainPane = loader.load();
-            Scene scene = new Scene(mainPane);
+            //Recreate the extension with the new orientation
+            Stage stage = ErgonomicToolBarExtension.getSharedStage(newOrientation);
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+
+            loader.setController(new InterfaceController());
+
+            Scene scene = new Scene(loader.load());
 
             // Update orientation for the next toggle
             currentOrientation = newOrientation;
@@ -91,6 +93,7 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
             }
         } catch (IOException e) {
             Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
+            logger.error("Unable to load extension interface FXML", e);
         }
     }
 
@@ -114,12 +117,18 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
 
                 var url = InterfaceController.class.getResource("RenameAnnotation.fxml");
                 FXMLLoader loader = new FXMLLoader(url);
+                loader.setController(new RenameAnnotationController());
+
                 renameAnnotationStage = new Stage();
                 Scene scene = new Scene(loader.load());
+
                 renameAnnotationStage.setScene(scene);
+
                 renameAnnotationStage.initStyle(StageStyle.UTILITY);
                 renameAnnotationStage.setResizable(false);
+
                 initRenameAnnotationSetAlwaysOnTop();
+
                 renameAnnotationStage.show();
             }
             else if (!renameAnnotationStage.isShowing()) {
