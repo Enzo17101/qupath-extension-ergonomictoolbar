@@ -229,61 +229,6 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
     }
 
     /**
-     * @return The stage set class annotation scene
-     */
-    public Stage getSharedSetClassAnnotationStage() {
-        if (set_Class_Annotation_Stage == null) {
-            set_Class_Annotation_Stage = new Stage();
-            set_Class_Annotation_Stage.setResizable(false);
-            set_Class_Annotation_Stage.initStyle(StageStyle.UTILITY); // Change this as needed
-        }
-        return set_Class_Annotation_Stage;
-    }
-
-    /**
-     * This method allows to open the stage for set the class of an annotation.
-     * @throws IOException exception during the opening of a stage.
-     */
-    public void set_Class_Annotation_Stage() throws IOException {
-
-        QP quPathApplication;
-
-        // We check if the stage is null or not in order to not display it twice.
-        if (set_Class_Annotation_Stage == null) {
-
-            // We check if a project is opened or not.
-            if(QP.getProject() != null ){
-                try {
-                    // We opened the stage.
-                    var url = InterfaceController.class.getResource("ModifyClass.fxml");
-                    FXMLLoader loader = new FXMLLoader(url);
-                    set_Class_Annotation_Stage = new Stage();
-                    Scene scene = new Scene(loader.load());
-                    set_Class_Annotation_Stage.setScene(scene);
-                    set_Class_Annotation_Stage.setAlwaysOnTop(true);
-                    set_Class_Annotation_Stage.show();
-                } catch (IOException e) {
-                    Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
-                    logger.error("Unable to load extension interface FXML", e);
-                }
-            }
-            // If there is no project we display an error message.
-            else {
-                System.out.println("Pas de projet");
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Erreur projet");
-                alert.setHeaderText(null);
-                alert.setContentText("Pour pouvoir utiliser cette fonctionnalité il faut qu'un projet soit ouvert.");
-                alert.showAndWait();
-            }
-        }
-        else if(!set_Class_Annotation_Stage.isShowing())
-        {
-            set_Class_Annotation_Stage.show();
-        }
-    }
-
-    /**
      * Return area when annotations have been selected
      */
     @Override
