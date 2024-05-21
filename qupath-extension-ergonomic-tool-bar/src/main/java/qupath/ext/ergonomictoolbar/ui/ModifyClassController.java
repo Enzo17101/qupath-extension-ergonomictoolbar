@@ -62,7 +62,7 @@ public class ModifyClassController {
      * @param event Event that led to this method.
      */
     @FXML
-    void actualize_ComboBox(ActionEvent event) {
+    void update_ComboBox(ActionEvent event) {
         errorLabel.setText("");
 
         // We load all the classes from QuPath.
@@ -83,12 +83,12 @@ public class ModifyClassController {
      * @param event Event that led to this method.
      */
     @FXML
-    void valide_New_Class(ActionEvent event) {
+    void confirm_New_Class(ActionEvent event) {
         PathObjectHierarchy hierarchy = QP.getCurrentHierarchy();
 
         // Check that an image has been opened.
         if(hierarchy == null) {
-            errorLabel.setText("Aucun fichier n'est ouvert.");
+            errorLabel.setText("No file is open.");
         }
         else
         {
@@ -99,7 +99,7 @@ public class ModifyClassController {
 
                 // Check that an annotation has been selected.
                 if(object == null) {
-                    errorLabel.setText("Aucune annotation n'est sélectionnée.");
+                    errorLabel.setText("No annotation selected.");
                 }
                 else
                 {
@@ -119,7 +119,7 @@ public class ModifyClassController {
                     }
 
                     else {
-                        errorLabel.setText("Veuillez sélectionner une classe.");
+                        errorLabel.setText("Please select a class.");
                     }
                 }
             }

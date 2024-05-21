@@ -9,13 +9,13 @@
 
 <AnchorPane prefHeight="196.0" prefWidth="226.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="qupath.ext.ergonomictoolbar.ui.ModifyClassController">
     <children>
-          <Label layoutX="34.0" layoutY="28.0" text="Sélectionner une classe">
+          <Label layoutX="70.0" layoutY="29.0" text="Select a class">
               <font>
                   <Font size="16.0" />
               </font>
           </Label>
       <ComboBox fx:id="class_ComboBox" layoutX="17.0" layoutY="73.0" prefHeight="26.0" prefWidth="198.0" />
-            <Button layoutX="116.0" layoutY="107.0" mnemonicParsing="false" onAction="#valide_New_Class" prefHeight="42.0" prefWidth="98.0" text="Valider">
+            <Button layoutX="116.0" layoutY="107.0" mnemonicParsing="false" onAction="#confirm_New_Class" prefHeight="42.0" prefWidth="98.0" text="Confirm">
          <font>
             <Font size="16.0" />
          </font>
@@ -25,7 +25,7 @@
                   <Label fx:id="errorLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="27.0" prefWidth="226.0" textAlignment="CENTER" textFill="RED" />
          </children>
       </Pane>
-      <Button layoutX="17.0" layoutY="107.0" mnemonicParsing="false" onAction="#actualize_ComboBox" prefHeight="42.0" prefWidth="98.0" text="Actualiser">
+      <Button layoutX="17.0" layoutY="107.0" mnemonicParsing="false" onAction="#update_ComboBox" prefHeight="42.0" prefWidth="98.0" text="Update">
          <font>
             <Font size="16.0" />
          </font>
