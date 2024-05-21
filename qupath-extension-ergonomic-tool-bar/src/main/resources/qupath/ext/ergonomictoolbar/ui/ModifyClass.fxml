@@ -15,9 +15,9 @@
               </font>
           </Label>
       <ComboBox fx:id="class_ComboBox" layoutX="17.0" layoutY="73.0" prefHeight="26.0" prefWidth="198.0" />
-            <Button layoutX="64.0" layoutY="108.0" mnemonicParsing="false" onAction="#valide_New_Class" prefHeight="42.0" prefWidth="98.0" text="Valider">
+            <Button layoutX="116.0" layoutY="107.0" mnemonicParsing="false" onAction="#valide_New_Class" prefHeight="42.0" prefWidth="98.0" text="Valider">
          <font>
-            <Font size="18.0" />
+            <Font size="16.0" />
          </font>
             </Button>
       <Pane layoutY="165.0" prefHeight="26.0" prefWidth="226.0">
@@ -25,5 +25,10 @@
                   <Label fx:id="errorLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="27.0" prefWidth="226.0" textAlignment="CENTER" textFill="RED" />
          </children>
       </Pane>
+      <Button layoutX="17.0" layoutY="107.0" mnemonicParsing="false" onAction="#actualize_ComboBox" prefHeight="42.0" prefWidth="98.0" text="Actualiser">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Button>
     </children>
 </AnchorPane>
