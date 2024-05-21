@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import qupath.ext.ergonomictoolbar.ErgonomicToolBarExtension;
 import qupath.fx.dialogs.Dialogs;
 import qupath.lib.gui.QuPathGUI;
+import qupath.lib.gui.commands.Commands;
 import qupath.lib.gui.measure.ObservableMeasurementTableData;
 import qupath.lib.gui.viewer.QuPathViewerListener;
 import qupath.lib.images.ImageData;
@@ -29,7 +30,12 @@ import qupath.lib.scripting.QP;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.ResourceBundle;
+
+import static java.lang.Math.round;
+import static qupath.lib.gui.scripting.QPEx.getQuPath;
+import static qupath.lib.scripting.QP.*;
 
 /**
  * Controller for UI pane contained in interface.fxml
@@ -83,11 +89,11 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
             stage.initStyle(StageStyle.UTILITY);
             stage.show();
 
-            if(QP.getCurrentHierarchy() != null)
+            if(getCurrentHierarchy() != null)
             {
-                if(QP.getCurrentHierarchy().getSelectionModel().getSelectedObject() != null)
+                if(getCurrentHierarchy().getSelectionModel().getSelectedObject() != null)
                 {
-                    QP.getCurrentHierarchy().getSelectionModel().setSelectedObject(QP.getCurrentHierarchy().getSelectionModel().getSelectedObject());
+                    getCurrentHierarchy().getSelectionModel().setSelectedObject(getCurrentHierarchy().getSelectionModel().getSelectedObject());
                 }
             }
         } catch (IOException e) {

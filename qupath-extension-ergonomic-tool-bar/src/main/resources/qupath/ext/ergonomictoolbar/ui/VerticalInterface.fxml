@@ -9,7 +9,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="600.0" maxWidth="65.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="65.0" style="-fx-background-color: white;" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="600.0" maxWidth="65.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="65.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <VBox alignment="CENTER" layoutX="-10.0" layoutY="120.0" prefHeight="610.0" prefWidth="65.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -50,7 +50,7 @@
                   <Font name="System Bold" size="10.0" />
                </font>
             </Button>
-            <Button alignment="CENTER" layoutX="15.0" layoutY="233.0" maxHeight="30.0" maxWidth="60.0" minHeight="30.0" minWidth="60.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="60.0" text="Set Class" textAlignment="CENTER" wrapText="true">
+            <Button alignment="CENTER" layoutX="15.0" layoutY="233.0" maxHeight="30.0" maxWidth="60.0" minHeight="30.0" minWidth="60.0" mnemonicParsing="false" onAction="#set_Class_Annotation_Stage" prefHeight="30.0" prefWidth="60.0" text="Set Class" textAlignment="CENTER" wrapText="true">
                <font>
                   <Font name="System Bold" size="10.0" />
                </font>
