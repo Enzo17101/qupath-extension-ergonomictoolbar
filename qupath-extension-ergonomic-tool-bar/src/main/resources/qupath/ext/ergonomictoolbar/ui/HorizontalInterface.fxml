@@ -57,7 +57,7 @@
                   <Font name="System Bold" size="12.0" />
                </font>
             </Button>
-            <Button fx:id="lockUnlockButton" text="Toggle Lock" onAction="#toggleLockAnnotation" layoutX="513.0" layoutY="15.0" maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;">
+            <Button fx:id="lockUnlockButton" layoutX="513.0" layoutY="15.0" maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#toggleLockAnnotation" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;" text="Toggle Lock">
                <graphic>
                   <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true">
                      <image>
@@ -100,12 +100,12 @@
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Text>
-                  <Text fx:id="areaLabel" strokeType="OUTSIDE" strokeWidth="0.0" text="X" textAlignment="CENTER" wrappingWidth="50.0">
+                  <Text fx:id="areaLabel" strokeType="OUTSIDE" strokeWidth="0.0" text="..." textAlignment="CENTER" wrappingWidth="50.0">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Text>
-                  <Text fx:id="areaLabel1" layoutX="10.0" layoutY="50.0" strokeType="OUTSIDE" strokeWidth="0.0" text="mm²" textAlignment="CENTER" wrappingWidth="50.0">
+                  <Text fx:id="areaLabel1" layoutX="10.0" layoutY="50.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="50.0">
                      <font>
                         <Font size="14.0" />
                      </font>
