@@ -35,7 +35,7 @@ import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.*;
 
-public class ModifyClassController implements Initializable {
+public class ModifyClassController {
 
     private static final Logger logger = LoggerFactory.getLogger(ErgonomicToolBarExtension.class);
 
@@ -57,8 +57,12 @@ public class ModifyClassController implements Initializable {
     public ModifyClassController() throws IOException {
     }
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    /**
+     * Method that allows to actualize the comboBox with all the current classes from QuPath.
+     * @param event Event that led to this method.
+     */
+    @FXML
+    void actualize_ComboBox(ActionEvent event) {
         errorLabel.setText("");
 
         // We load all the classes from QuPath.
