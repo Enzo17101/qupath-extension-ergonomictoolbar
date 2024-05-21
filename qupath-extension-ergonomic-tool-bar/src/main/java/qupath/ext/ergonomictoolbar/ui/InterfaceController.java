@@ -270,7 +270,7 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
             }
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setHeaderText("Annotation Lock Error");
+            alert.setHeaderText(null);
             alert.setContentText("No annotation is selected.");
             alert.showAndWait();
         }

@@ -22,7 +22,7 @@
                   </ImageView>
                </graphic>
             </Button>
-            <Button maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;">
+            <Button alignment="CENTER" maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;">
                <graphic>
                   <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true">
                      <image>
@@ -33,7 +33,7 @@
             </Button>
             <VBox alignment="CENTER" prefWidth="80.0">
                <children>
-                  <Button maxHeight="40.0" maxWidth="50.0" minHeight="40.0" minWidth="50.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="50.0" style="-fx-background-color: white;">
+                  <Button alignment="CENTER" maxHeight="40.0" maxWidth="50.0" minHeight="40.0" minWidth="50.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="50.0" style="-fx-background-color: white;">
                      <graphic>
                         <ImageView fitHeight="40.0" fitWidth="50.0" pickOnBounds="true">
                            <image>
@@ -45,12 +45,12 @@
                   <ComboBox prefWidth="60.0" />
                </children>
             </VBox>
-            <Button maxHeight="30.0" maxWidth="60.0" minHeight="30.0" minWidth="60.0" mnemonicParsing="false" onAction="#renameAnnotation" prefHeight="30.0" prefWidth="60.0" text="Set Name" textAlignment="CENTER" wrapText="true">
+            <Button alignment="CENTER" maxHeight="30.0" maxWidth="60.0" minHeight="30.0" minWidth="60.0" mnemonicParsing="false" onAction="#renameAnnotation" prefHeight="30.0" prefWidth="60.0" text="Set Name" textAlignment="CENTER" wrapText="true">
                <font>
                   <Font name="System Bold" size="10.0" />
                </font>
             </Button>
-            <Button layoutX="15.0" layoutY="233.0" maxHeight="30.0" maxWidth="60.0" minHeight="30.0" minWidth="60.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="60.0" text="Set Class" textAlignment="CENTER" wrapText="true">
+            <Button alignment="CENTER" layoutX="15.0" layoutY="233.0" maxHeight="30.0" maxWidth="60.0" minHeight="30.0" minWidth="60.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="60.0" text="Set Class" textAlignment="CENTER" wrapText="true">
                <font>
                   <Font name="System Bold" size="10.0" />
                </font>
@@ -64,7 +64,7 @@
                   </ImageView>
                </graphic>
             </Button>
-            <Button maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;">
+            <Button alignment="CENTER" maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;">
                <graphic>
                   <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true">
                      <image>
@@ -73,7 +73,7 @@
                   </ImageView>
                </graphic>
             </Button>
-            <Button maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#display_Or_Hide_Names" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;">
+            <Button alignment="CENTER" maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#display_Or_Hide_Names" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;">
                <graphic>
                   <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true">
                      <image>
@@ -82,7 +82,7 @@
                   </ImageView>
                </graphic>
             </Button>
-            <Button maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#toggleToolbarOrientation" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;">
+            <Button alignment="CENTER" maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#toggleToolbarOrientation" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;">
                <graphic>
                   <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -110,7 +110,7 @@
                   </Text>
                </children>
             </VBox>
-            <Button maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;">
+            <Button alignment="CENTER" maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;">
                <graphic>
                   <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true">
                      <image>
