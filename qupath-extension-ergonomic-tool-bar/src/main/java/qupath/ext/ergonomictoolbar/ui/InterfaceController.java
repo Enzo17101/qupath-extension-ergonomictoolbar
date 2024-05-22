@@ -28,6 +28,7 @@ import qupath.lib.roi.ROIs;
 import qupath.lib.images.ImageData;
 import qupath.lib.images.servers.PixelCalibration;
 import qupath.lib.roi.interfaces.ROI;
+import qupath.lib.scripting.QP;
 
 import java.io.IOException;
 import java.util.ResourceBundle;
@@ -198,6 +199,7 @@ public class InterfaceController extends VBox {
         // If the viewer exists
         if (viewer != null) {
             // If you are already set to the rectangle ROI tool
+            System.out.println(gui.getToolManager().getSelectedTool());
             if (viewer.getActiveTool() == PathTools.RECTANGLE) {
                 // Switch to the move tool
                 viewer.setActiveTool(PathTools.MOVE);
