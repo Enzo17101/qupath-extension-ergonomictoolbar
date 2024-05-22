@@ -1,9 +1,11 @@
 package qupath.ext.ergonomictoolbar.ui;
 
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -17,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qupath.ext.ergonomictoolbar.ErgonomicToolBarExtension;
 import qupath.fx.dialogs.Dialogs;
+import qupath.lib.gui.QuPathApp;
 import qupath.lib.gui.QuPathGUI;
 import qupath.lib.gui.commands.Commands;
 import qupath.lib.gui.measure.ObservableMeasurementTableData;
@@ -25,10 +28,24 @@ import qupath.lib.images.ImageData;
 import qupath.lib.objects.PathObject;
 import qupath.lib.objects.hierarchy.events.PathObjectSelectionListener;
 import qupath.lib.gui.viewer.QuPathViewer;
+import qupath.lib.gui.viewer.tools.PathTool;
+import qupath.lib.gui.viewer.tools.PathTools;
+import qupath.lib.gui.viewer.tools.handlers.PathToolEventHandlers;
+import qupath.lib.objects.PathAnnotationObject;
+import qupath.lib.objects.PathObject;
+import qupath.lib.objects.PathObjects;
+import qupath.lib.regions.ImagePlane;
+import qupath.lib.regions.ImageRegion;
+import qupath.lib.roi.ROIs;
+import qupath.lib.images.ImageData;
+import qupath.lib.images.servers.PixelCalibration;
+import qupath.lib.roi.interfaces.ROI;
+import qupath.lib.scripting.QP;
 import qupath.lib.scripting.QP;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.ResourceBundle;
@@ -48,6 +65,10 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
 
     private boolean isFillingDisplayed = true;
     private boolean is_Names_Display = true;
+
+    private int rectangular_selection_width = 10000;
+    private int rectangular_selection_height = 10000;
+    private boolean rectangular_selection_size_in_pixels = true;
 
     private static final ResourceBundle resources = ResourceBundle.getBundle("qupath.ext.ergonomictoolbar.ui.strings");
     /**
@@ -193,6 +214,198 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
         QuPathGUI quPath_GUI = QuPathGUI.getInstance();
         QuPathViewer viewer = quPath_GUI.getViewer();
         viewer.getOverlayOptions().setShowNames(is_Names_Display);
+    }
+
+    /**
+     * This method locks or unlocks the currently selected ROI (Region of Interest).
+     * It toggles the lock status of the selected annotation in the viewer.
+     */
+    @FXML
+    private void lockUnlockROI() {
+        QuPathGUI gui = QuPathGUI.getInstance();
+        QuPathViewer viewer = gui.getViewer();
+        ImageData<?> imageData = gui.getImageData();
+
+        // If the viewer exists and an object is currently selected
+        if (viewer != null && viewer.getSelectedObject() != null) {
+            // Get the currently selected object
+            PathObject selectedObject = viewer.getSelectedObject();
+
+            // Check the lock status
+            boolean isLocked = selectedObject.isLocked();
+
+            // Reverse the lock status
+            selectedObject.setLocked(!isLocked);
+
+            // Update the display
+            imageData.getHierarchy().fireHierarchyChangedEvent(this);
+            viewer.repaint();
+        }
+    }
+
+    /**
+     * This method activates the tool to create a polygon ROI (Region of Interest) in the viewer.
+     * It sets the active tool to the predefined polygon tool.
+     */
+    @FXML
+    private void createPolygonROI() {
+        // Get the current instance of QuPathGUI
+        QuPathGUI gui = QuPathGUI.getInstance();
+        QuPathViewer viewer = gui.getViewer();
+
+        // If the viewer exists
+        if (viewer != null) {
+            // If you are already set to the polygon ROI tool
+            if (viewer.getActiveTool() == PathTools.POLYGON) {
+                // Switch to the move tool
+                viewer.setActiveTool(PathTools.MOVE);
+                gui.getToolManager().setSelectedTool(PathTools.MOVE);
+            } else { // Otherwise
+                // Set the active tool to the polygon ROI tool
+                viewer.setActiveTool(PathTools.POLYGON);
+                gui.getToolManager().setSelectedTool(PathTools.POLYGON);
+            }
+        }
+    }
+
+    /**
+     * This method activates the tool to create a rectangular ROI (Region of Interest) in the viewer.
+     * It sets the active tool to the predefined rectangle tool.
+     */
+    @FXML
+    private void createRectangleROI() {
+        // Get the current instance of QuPathGUI
+        QuPathGUI gui = QuPathGUI.getInstance();
+        QuPathViewer viewer = gui.getViewer();
+
+        // If the viewer exists
+        if (viewer != null) {
+            // If you are already set to the rectangle ROI tool
+            System.out.println(gui.getToolManager().getSelectedTool());
+            if (viewer.getActiveTool() == PathTools.RECTANGLE) {
+                // Switch to the move tool
+                viewer.setActiveTool(PathTools.MOVE);
+                gui.getToolManager().setSelectedTool(PathTools.MOVE);
+            } else { // Otherwise
+                // Set the active tool to the rectangle ROI tool
+                viewer.setActiveTool(PathTools.RECTANGLE);
+                gui.getToolManager().setSelectedTool(PathTools.RECTANGLE);
+            }
+        }
+    }
+
+    /**
+     * This method creates a rectangular ROI (Region of Interest) with predefined dimensions.
+     * It calculates the rectangle's dimensions in pixels, centers it in the viewer,
+     * and creates an annotation with the specified size.
+     */
+    @FXML
+    private void createPredefinedSizedRectangularROI() {
+        QuPathGUI gui = QuPathGUI.getInstance();
+        QuPathViewer viewer = gui.getViewer();
+        ImageData<?> imageData = gui.getImageData();
+
+        // If the image data exists
+        if (imageData != null) {
+            // Dimensions of the rectangle
+            int widthInPixels, heightInPixels;
+
+            // If dimensions are already in pixels
+            if (rectangular_selection_size_in_pixels) {
+                widthInPixels = rectangular_selection_width;
+                heightInPixels = rectangular_selection_height;
+            } else { // Convert dimensions from millimeters to pixels
+                PixelCalibration cal = imageData.getServer().getPixelCalibration();
+                widthInPixels = (rectangular_selection_width / (int)cal.getPixelWidthMicrons()) * 1000;
+                heightInPixels = (rectangular_selection_height / (int)cal.getPixelHeightMicrons()) * 1000;
+            }
+
+            // Coordinates of the center of the viewer
+            int centerX = (int)viewer.getCenterPixelX();
+            int centerY = (int)viewer.getCenterPixelY();
+
+            // Calculate the starting coordinates of the rectangle
+            int x = centerX - widthInPixels / 2;
+            int y = centerY - heightInPixels / 2;
+
+            // Create an instance of ImageRegion
+            ImageRegion imageRegion = ImageRegion.createInstance(x, y, widthInPixels, heightInPixels, 0, 0);
+
+            // Use the createRectangleROI method to create the ROI
+            ROI rectangleROI = ROIs.createRectangleROI(imageRegion);
+
+            // Create an annotation from the ROI
+            PathObject annotation = PathObjects.createAnnotationObject(rectangleROI);
+
+            // Add the annotation to the image
+            imageData.getHierarchy().addObject(annotation);
+
+            // Update the display
+            imageData.getHierarchy().fireHierarchyChangedEvent(this);
+            viewer.repaint();
+        }
+
+        // Switch to the move tool
+        viewer.setActiveTool(PathTools.MOVE);
+        gui.getToolManager().setSelectedTool(PathTools.MOVE);
+    }
+
+    @FXML
+    private void createZoomRectangularROI() {
+        QuPathGUI gui = QuPathGUI.getInstance();
+        QuPathViewer viewer = gui.getViewer();
+        ImageData<?> imageData = gui.getImageData();
+
+        // If the image data exists
+        if (imageData != null) {
+            // Get the width and height of the viewer
+            int viewerWidth = viewer.getServerWidth();
+            int viewerHeight = viewer.getServerHeight();
+
+            // Get the width and height of the visible area on the canvas
+            int visibleWidth = (int) viewer.getView().getWidth();
+            int visibleHeight = (int) viewer.getView().getHeight();
+
+            // Get the current downsample factor
+            double downsampleFactor = viewer.getDownsampleFactor();
+
+            // Convert the visible dimensions to image coordinates using the downsample factor
+            int imageWidth = (int) (visibleWidth * downsampleFactor);
+            int imageHeight = (int) (visibleHeight * downsampleFactor);
+
+            // Dimensions of the ROI
+            int ROIWidth = imageWidth / 2;
+            int ROIHeight = imageHeight / 2;
+
+            // Calculate the starting coordinates of the rectangle
+            int x = (int) viewer.getCenterPixelX() - ROIWidth / 2;
+            if (x + ROIWidth > viewerWidth) x = viewerWidth - ROIWidth;
+            if (x < 0) x = 0;
+
+            int y = (int) viewer.getCenterPixelY() - ROIHeight / 2;
+            if (y + ROIHeight > viewerHeight) y = viewerHeight - ROIHeight;
+            if (y < 0) y = 0;
+
+            // Create an instance of ImageRegion
+            ImageRegion imageRegion = ImageRegion.createInstance(x, y, ROIWidth, ROIHeight, 0, 0);
+
+            // Use the createRectangleROI method to create the ROI
+            ROI rectangleROI = ROIs.createRectangleROI(imageRegion);
+
+            // Create an annotation from the ROI
+            PathObject annotation = PathObjects.createAnnotationObject(rectangleROI);
+
+            // Add the annotation to the image
+            imageData.getHierarchy().addObject(annotation);
+
+            // Update the display
+            imageData.getHierarchy().fireHierarchyChangedEvent(this);
+            viewer.repaint();
+        }
+
+        // Switch to the move tool
+        viewer.setActiveTool(PathTools.MOVE);
+        gui.getToolManager().setSelectedTool(PathTools.MOVE);
     }
 
     /**
