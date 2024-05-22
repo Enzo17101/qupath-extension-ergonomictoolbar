@@ -273,7 +273,7 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
      * It sets the active tool to the predefined rectangle tool.
      */
     @FXML
-    private void createRectangleROI() {
+        private void createRectangleROI() {
         // Get the current instance of QuPathGUI
         QuPathGUI gui = QuPathGUI.getInstance();
         QuPathViewer viewer = gui.getViewer();
