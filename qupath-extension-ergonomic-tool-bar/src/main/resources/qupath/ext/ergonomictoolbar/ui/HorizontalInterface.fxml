@@ -66,7 +66,7 @@
                   </ImageView>
                </graphic>
             </Button>
-            <Button layoutX="553.0" layoutY="15.0" maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#display_Or_Hide_Filling" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;">
+            <Button layoutX="553.0" layoutY="15.0" maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#displayOrHideFilling" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;">
                <graphic>
                   <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true">
                      <image>
@@ -75,7 +75,7 @@
                   </ImageView>
                </graphic>
             </Button>
-            <Button layoutX="513.0" layoutY="15.0" maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#display_Or_Hide_Names" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;">
+            <Button layoutX="513.0" layoutY="15.0" maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#displayOrHideNames" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;">
                <graphic>
                   <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true">
                      <image>
@@ -105,7 +105,7 @@
                         <Font size="14.0" />
                      </font>
                   </Text>
-                  <Text fx:id="areaLabel1" layoutX="10.0" layoutY="50.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="50.0">
+                  <Text fx:id="areaMagnitudeLabel" layoutX="10.0" layoutY="50.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="50.0">
                      <font>
                         <Font size="14.0" />
                      </font>

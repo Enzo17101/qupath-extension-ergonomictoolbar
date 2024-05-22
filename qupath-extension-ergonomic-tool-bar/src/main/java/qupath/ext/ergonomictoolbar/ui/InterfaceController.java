@@ -4,17 +4,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import qupath.ext.ergonomictoolbar.ErgonomicToolBarExtension;
 import qupath.fx.dialogs.Dialogs;
 import qupath.lib.gui.QuPathGUI;
@@ -43,31 +38,36 @@ import static qupath.lib.scripting.QP.*;
 
 public class InterfaceController extends VBox implements PathObjectSelectionListener, QuPathViewerListener {
 
-    public Text areaLabel;
-    public Text areaLabel1;
 
-    private boolean isFillingDisplayed = true;
-    private boolean is_Names_Display = true;
+    /**
+     * Labels for the area display
+     */
+    public Text areaLabel;
+    public Text areaMagnitudeLabel;
 
     private static final ResourceBundle resources = ResourceBundle.getBundle("qupath.ext.ergonomictoolbar.ui.strings");
+
     /**
      * Logger user to save report the error into logs
      */
     private static final Logger logger = LoggerFactory.getLogger(ErgonomicToolBarExtension.class);
 
     /**
-     * Create a stage for the renameAnnotation view
+     * Stage for the renameAnnotation view
      */
     private static Stage renameAnnotationStage;
 
-    private Stage set_Class_Annotation_Stage;
+    /**
+     * Stage for the modifyClass view
+     */
+    private static Stage modifyClassStage;
 
     /**
      * The current orientation of the toolbar
      * true means vertical
      * false means horizontal
      */
-    private static boolean currentOrientation = true;//vertical
+    private static boolean currentOrientation = true;//vertical by default
 
     @FXML
     private void toggleToolbarOrientation() {
@@ -105,7 +105,7 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
     }
 
     /**
-     * @return the stage rename annotation scene
+     * @return the rename annotation stage
      */
     public static Stage getSharedRenameAnnotationStage() {
         if (renameAnnotationStage == null) {
@@ -118,93 +118,126 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
 
     @FXML
     private void renameAnnotation() {
+
+        boolean validUsage = true;
+        String alertTitle = null;
+        String alertMessage = null;
         if(getProject() != null)
         {
-            try {
-                if (renameAnnotationStage == null) {
-                    var url = InterfaceController.class.getResource("RenameAnnotation.fxml");
-                    FXMLLoader loader = new FXMLLoader(url);
-                    loader.setController(new RenameAnnotationController());
+            if(getCurrentHierarchy() != null)
+            {
+                if(getCurrentHierarchy().getSelectionModel().getSelectedObject() != null)
+                {
+                    try {
+                        if (renameAnnotationStage == null) {
+                            // If the renameAnnotation window doesn't exist, we create it
+                            var url = InterfaceController.class.getResource("RenameAnnotation.fxml");
+                            FXMLLoader loader = new FXMLLoader(url);
+                            loader.setController(new RenameAnnotationController());
 
-                    renameAnnotationStage = new Stage();
-                    Scene scene = new Scene(loader.load());
+                            renameAnnotationStage = new Stage();
 
-                    renameAnnotationStage.setScene(scene);
+                            Scene scene = new Scene(loader.load());
+                            renameAnnotationStage.setScene(scene);
 
-                    renameAnnotationStage.initStyle(StageStyle.UTILITY);
-                    renameAnnotationStage.setResizable(false);
+                            renameAnnotationStage.initStyle(StageStyle.UTILITY);
+                            renameAnnotationStage.setResizable(false);
 
-                    initRenameAnnotationSetAlwaysOnTop();
+                            Stage quPathStage = QuPathGUI.getInstance().getStage();
 
-                    renameAnnotationStage.show();
+                            //It is set alway on top only if the application is showing
+                            quPathStage.focusedProperty().addListener((observableValue, onHidden, onShown) -> {
+                                if(onHidden || renameAnnotationStage.isFocused())
+                                {
+                                    renameAnnotationStage.setAlwaysOnTop(false);
+                                }
+                                if(onShown)
+                                {
+                                    renameAnnotationStage.setAlwaysOnTop(true);
+                                }
+                            });
+                            renameAnnotationStage.show();
+                        }
+                        else {
+                            renameAnnotationStage.show();
+                        }
+                    }
+                    catch (IOException e) {
+                        Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
+                        logger.error("Unable to load extension interface FXML", e);
+                    }
                 }
-                else if (!renameAnnotationStage.isShowing()) {
-                    renameAnnotationStage.show();
+                else
+                {
+                    validUsage = false;
+                    alertTitle = "No annotation selected";
+                    alertMessage = "Please select an annotation before using this function.";
                 }
             }
-            catch (IOException e) {
-                Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
-                logger.error("Unable to load extension interface FXML", e);
+            else
+            {
+                validUsage = false;
+                alertTitle = "No file open";
+                alertMessage = "Please open a file before using this function.";
             }
+
         }
         // If there is no project we display an error message.
-        else {
+        else
+        {
+            validUsage = false;
+            alertTitle = "No open projects";
+            alertMessage = "Please open a project before using this function.";
+        }
+
+        if(!validUsage)
+        {
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("No open projects.");
+            alert.setTitle(alertTitle);
             alert.setHeaderText(null);
-            alert.setContentText("Please open a project before using this function.");
+            alert.setContentText(alertMessage);
             alert.showAndWait();
         }
-    }
-
-    public void initRenameAnnotationSetAlwaysOnTop()
-    {
-        Stage quPathStage = QuPathGUI.getInstance().getStage();
-
-        quPathStage.focusedProperty().addListener((observableValue, onHidden, onShown) -> {
-            if(onHidden || renameAnnotationStage.isFocused())
-            {
-                renameAnnotationStage.setAlwaysOnTop(false);
-            }
-            if(onShown)
-            {
-                renameAnnotationStage.setAlwaysOnTop(true);
-            }
-        });
     }
 
     /**
      * This method allows to display or hide filling of all the annotations according to their current state.
      */
-    public void display_Or_Hide_Filling() {
-        isFillingDisplayed = !isFillingDisplayed;
+    public void displayOrHideFilling()
+    {
+        QuPathViewer viewer = QuPathGUI.getInstance().getViewer();
 
-        QuPathGUI quPath_GUI = QuPathGUI.getInstance();
-        QuPathViewer viewer = quPath_GUI.getViewer();
-        viewer.getOverlayOptions().setFillAnnotations(isFillingDisplayed);
+        if(viewer != null)
+        {
+            boolean fillingDisplay = !QuPathGUI.getInstance().getOverlayOptions().getFillAnnotations();
+            viewer.getOverlayOptions().setFillAnnotations(fillingDisplay);
+        }
     }
 
     /**
      * This method allows to display or hide names of all the annotations according to their current state.
      */
-    public void display_Or_Hide_Names() {
-        is_Names_Display = !is_Names_Display;
+    public void displayOrHideNames()
+    {
+        QuPathViewer viewer = QuPathGUI.getInstance().getViewer();
 
-        QuPathGUI quPath_GUI = QuPathGUI.getInstance();
-        QuPathViewer viewer = quPath_GUI.getViewer();
-        viewer.getOverlayOptions().setShowNames(is_Names_Display);
+        if(viewer != null)
+        {
+            boolean nameDisplay = !QuPathGUI.getInstance().getOverlayOptions().getShowNames();
+            viewer.getOverlayOptions().setShowNames(nameDisplay);
+        }
     }
 
     /**
-     * @return The stage set class annotation scene
+     * @return The modify class stage
      */
     public Stage getSharedSetClassAnnotationStage() {
-        if (set_Class_Annotation_Stage == null) {
-            set_Class_Annotation_Stage = new Stage();
-            set_Class_Annotation_Stage.setResizable(false);
-            set_Class_Annotation_Stage.initStyle(StageStyle.UTILITY); // Change this as needed
+        if (modifyClassStage == null) {
+            modifyClassStage = new Stage();
+            modifyClassStage.setResizable(false);
+            modifyClassStage.initStyle(StageStyle.UTILITY); // Change this as needed
         }
-        return set_Class_Annotation_Stage;
+        return modifyClassStage;
     }
 
     /**
@@ -216,7 +249,7 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
         QP quPathApplication;
 
         // We check if the stage is null or not in order to not display it twice.
-        if (set_Class_Annotation_Stage == null) {
+        if (modifyClassStage == null) {
 
             // We check if a project is opened or not.
             if(QP.getProject() != null ){
@@ -224,11 +257,11 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
                     // We opened the stage.
                     var url = InterfaceController.class.getResource("ModifyClass.fxml");
                     FXMLLoader loader = new FXMLLoader(url);
-                    set_Class_Annotation_Stage = new Stage();
+                    modifyClassStage = new Stage();
                     Scene scene = new Scene(loader.load());
-                    set_Class_Annotation_Stage.setScene(scene);
-                    set_Class_Annotation_Stage.setAlwaysOnTop(true);
-                    set_Class_Annotation_Stage.show();
+                    modifyClassStage.setScene(scene);
+                    modifyClassStage.setAlwaysOnTop(true);
+                    modifyClassStage.show();
                 } catch (IOException e) {
                     Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
                     logger.error("Unable to load extension interface FXML", e);
@@ -243,9 +276,9 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
                 alert.showAndWait();
             }
         }
-        else if(!set_Class_Annotation_Stage.isShowing())
+        else if(!modifyClassStage.isShowing())
         {
-            set_Class_Annotation_Stage.show();
+            modifyClassStage.show();
         }
     }
 
@@ -257,7 +290,7 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
 
         if (pathObjectSelected == null){
             areaLabel.setText("...");
-            areaLabel1.setText("");
+            areaMagnitudeLabel.setText("");
         }
         else {
             // Here goes your selection change logic
@@ -281,7 +314,7 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
             }
 
             areaLabel.setText(String.valueOf(aire));
-            areaLabel1.setText(magnitude);
+            areaMagnitudeLabel.setText(magnitude);
         }
     }
 
@@ -361,5 +394,32 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
             alert.setContentText("No annotation is selected.");
             alert.showAndWait();
         }
+    }
+
+    public void noProject()
+    {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("No projects open");
+        alert.setHeaderText(null);
+        alert.setContentText("Please open a project before using this function.");
+        alert.showAndWait();
+    }
+
+    public void noFile()
+    {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("No files open");
+        alert.setHeaderText(null);
+        alert.setContentText("Please open a file before using this function.");
+        alert.showAndWait();
+    }
+
+    public void noAnnotation()
+    {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("No annotation selected");
+        alert.setHeaderText(null);
+        alert.setContentText("Please select an annotation before using this function.");
+        alert.showAndWait();
     }
 }
