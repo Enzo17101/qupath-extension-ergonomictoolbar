@@ -10,8 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-
-<AnchorPane prefHeight="120.0" prefWidth="220.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="qupath.ext.ergonomictoolbar.ui.RenameAnnotationController">
+<AnchorPane prefHeight="120.0" prefWidth="300.0" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <BorderPane layoutX="-22.0" layoutY="-55.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <top>
@@ -39,7 +38,7 @@
                         <Insets bottom="10.0" left="10.0" right="10.0" />
                      </HBox.margin>
                   </Label>
-                  <Button mnemonicParsing="false" onAction="#validateNewName" text="Valider">
+                  <Button minWidth="55.0" mnemonicParsing="false" onAction="#validateNewName" text="Valider">
                      <HBox.margin>
                         <Insets bottom="10.0" right="10.0" />
                      </HBox.margin>
