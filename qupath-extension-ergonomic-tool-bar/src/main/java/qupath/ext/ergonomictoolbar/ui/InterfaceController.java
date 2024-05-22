@@ -137,38 +137,37 @@ public class InterfaceController extends VBox {
 
         QP quPathApplication;
 
-        // We check if the stage is null or not in order to not display it twice.
-        if (set_Class_Annotation_Stage == null) {
+        // We check if a project is opened or not.
+        if(QP.getProject() != null ){
+            try {
+                // We opened the stage.
+                var url = InterfaceController.class.getResource("ModifyClass.fxml");
+                FXMLLoader loader = new FXMLLoader(url);
+                set_Class_Annotation_Stage = new Stage();
+                Scene scene = new Scene(loader.load());
 
-            // We check if a project is opened or not.
-            if(QP.getProject() != null ){
-                try {
-                    // We opened the stage.
-                    var url = InterfaceController.class.getResource("ModifyClass.fxml");
-                    FXMLLoader loader = new FXMLLoader(url);
-                    set_Class_Annotation_Stage = new Stage();
-                    Scene scene = new Scene(loader.load());
-                    set_Class_Annotation_Stage.setScene(scene);
-                    set_Class_Annotation_Stage.setAlwaysOnTop(true);
-                    set_Class_Annotation_Stage.show();
-                } catch (IOException e) {
-                    Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
-                    logger.error("Unable to load extension interface FXML", e);
-                }
-            }
-            // If there is no project we display an error message.
-            else {
-                System.out.println("Pas de projet");
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Erreur projet");
-                alert.setHeaderText(null);
-                alert.setContentText("Pour pouvoir utiliser cette fonctionnalité il faut qu'un projet soit ouvert.");
-                alert.showAndWait();
+                // Récupérer le contrôleur
+                ModifyClassController controller = loader.getController();
+
+                // Appeler la méthode update_ComboBox sur le contrôleur
+                controller.update_ComboBox();
+
+                set_Class_Annotation_Stage.setScene(scene);
+                set_Class_Annotation_Stage.setAlwaysOnTop(true);
+                set_Class_Annotation_Stage.show();
+            } catch (IOException e) {
+                Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
+                logger.error("Unable to load extension interface FXML", e);
             }
         }
-        else if(!set_Class_Annotation_Stage.isShowing())
-        {
-            set_Class_Annotation_Stage.show();
+        // If there is no project we display an error message.
+        else {
+            System.out.println("Pas de projet");
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erreur projet");
+            alert.setHeaderText(null);
+            alert.setContentText("Pour pouvoir utiliser cette fonctionnalité il faut qu'un projet soit ouvert.");
+            alert.showAndWait();
         }
     }
 }
