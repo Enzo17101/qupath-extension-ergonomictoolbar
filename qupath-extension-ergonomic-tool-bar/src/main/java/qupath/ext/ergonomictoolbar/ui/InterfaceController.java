@@ -45,6 +45,8 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
 
     public Text areaLabel;
     public Text areaLabel1;
+
+    private boolean isFillingDisplayed = true;
     private boolean is_Names_Display = true;
 
     private static final ResourceBundle resources = ResourceBundle.getBundle("qupath.ext.ergonomictoolbar.ui.strings");
@@ -102,7 +104,6 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
         }
     }
 
-
     /**
      * @return the stage rename annotation scene
      */
@@ -117,32 +118,42 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
 
     @FXML
     private void renameAnnotation() {
-        try {
-            if (renameAnnotationStage == null) {
+        if(getProject() != null)
+        {
+            try {
+                if (renameAnnotationStage == null) {
+                    var url = InterfaceController.class.getResource("RenameAnnotation.fxml");
+                    FXMLLoader loader = new FXMLLoader(url);
+                    loader.setController(new RenameAnnotationController());
 
-                var url = InterfaceController.class.getResource("RenameAnnotation.fxml");
-                FXMLLoader loader = new FXMLLoader(url);
-                loader.setController(new RenameAnnotationController());
+                    renameAnnotationStage = new Stage();
+                    Scene scene = new Scene(loader.load());
 
-                renameAnnotationStage = new Stage();
-                Scene scene = new Scene(loader.load());
+                    renameAnnotationStage.setScene(scene);
 
-                renameAnnotationStage.setScene(scene);
+                    renameAnnotationStage.initStyle(StageStyle.UTILITY);
+                    renameAnnotationStage.setResizable(false);
 
-                renameAnnotationStage.initStyle(StageStyle.UTILITY);
-                renameAnnotationStage.setResizable(false);
+                    initRenameAnnotationSetAlwaysOnTop();
 
-                initRenameAnnotationSetAlwaysOnTop();
-
-                renameAnnotationStage.show();
+                    renameAnnotationStage.show();
+                }
+                else if (!renameAnnotationStage.isShowing()) {
+                    renameAnnotationStage.show();
+                }
             }
-            else if (!renameAnnotationStage.isShowing()) {
-                renameAnnotationStage.show();
+            catch (IOException e) {
+                Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
+                logger.error("Unable to load extension interface FXML", e);
             }
         }
-        catch (IOException e) {
-            Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
-            logger.error("Unable to load extension interface FXML", e);
+        // If there is no project we display an error message.
+        else {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("No open projects.");
+            alert.setHeaderText(null);
+            alert.setContentText("Please open a project before using this function.");
+            alert.showAndWait();
         }
     }
 
@@ -160,6 +171,17 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
                 renameAnnotationStage.setAlwaysOnTop(true);
             }
         });
+    }
+
+    /**
+     * This method allows to display or hide filling of all the annotations according to their current state.
+     */
+    public void display_Or_Hide_Filling() {
+        isFillingDisplayed = !isFillingDisplayed;
+
+        QuPathGUI quPath_GUI = QuPathGUI.getInstance();
+        QuPathViewer viewer = quPath_GUI.getViewer();
+        viewer.getOverlayOptions().setFillAnnotations(isFillingDisplayed);
     }
 
     /**
@@ -214,11 +236,10 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
             }
             // If there is no project we display an error message.
             else {
-                System.out.println("Pas de projet");
                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Erreur projet");
+                alert.setTitle("No open projects.");
                 alert.setHeaderText(null);
-                alert.setContentText("Pour pouvoir utiliser cette fonctionnalité il faut qu'un projet soit ouvert.");
+                alert.setContentText("Please open a project before using this function.");
                 alert.showAndWait();
             }
         }
