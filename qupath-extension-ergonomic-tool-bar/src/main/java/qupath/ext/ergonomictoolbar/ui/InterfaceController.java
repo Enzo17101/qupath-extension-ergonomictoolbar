@@ -58,7 +58,7 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
     /**
      * Create a stage for the renameAnnotation view
      */
-    private Stage renameAnnotationStage;
+    private static Stage renameAnnotationStage;
 
     private Stage set_Class_Annotation_Stage;
 
@@ -107,7 +107,7 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
     /**
      * @return the stage rename annotation scene
      */
-    public Stage getSharedRenameAnnotationStage() {
+    public static Stage getSharedRenameAnnotationStage() {
         if (renameAnnotationStage == null) {
             renameAnnotationStage = new Stage();
             renameAnnotationStage.setResizable(false);
@@ -258,7 +258,6 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
         if (pathObjectSelected == null){
             areaLabel.setText("...");
             areaLabel1.setText("");
-            System.out.println("...");
         }
         else {
             // Here goes your selection change logic
@@ -283,7 +282,6 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
 
             areaLabel.setText(String.valueOf(aire));
             areaLabel1.setText(magnitude);
-            System.out.println(aire);
         }
     }
 
@@ -314,9 +312,6 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
 
     @Override
     public void imageDataChanged(QuPathViewer viewer, ImageData<BufferedImage> imageDataOld, ImageData<BufferedImage> imageDataNew) {
-
-
-
         //Pour éviter les problèmes si aucune image n'est ouverte
         //Demandera de rafraichir l'extension (en changeant l'orientation par exemple)
         if(getQuPath() != null){

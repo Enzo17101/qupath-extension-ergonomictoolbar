@@ -88,7 +88,7 @@ public class ModifyClassController {
 
         // Check that an image has been opened.
         if(hierarchy == null) {
-            errorLabel.setText("No file is open.");
+            errorLabel.setText("No file are open.");
         }
         else
         {
@@ -99,7 +99,7 @@ public class ModifyClassController {
 
                 // Check that an annotation has been selected.
                 if(object == null) {
-                    errorLabel.setText("No annotation selected.");
+                    errorLabel.setText("No annotations are selected");
                 }
                 else
                 {

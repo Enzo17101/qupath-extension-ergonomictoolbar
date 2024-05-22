@@ -57,7 +57,7 @@ public class RenameAnnotationController extends AnchorPane{
 
             if(hierarchy == null)
             {
-                errorLabel.setText("Aucun fichier n'est ouvert.");
+                errorLabel.setText("No file are open.");
             }
             else
             {
@@ -70,11 +70,11 @@ public class RenameAnnotationController extends AnchorPane{
                     String newName = nameTextField.getText();
 
                     if(object == null) {
-                        errorLabel.setText("Aucune annotation n'est sélectionnée.");
+                        errorLabel.setText("No annotations are selected");
                     }
                     else if(newName.isEmpty())
                     {
-                        errorLabel.setText("Nom invalide.");
+                        errorLabel.setText("Invalid name.");
                     }
                     else
                     {
@@ -87,7 +87,8 @@ public class RenameAnnotationController extends AnchorPane{
                         QP.refreshIDs();
 
                         //Pour fermer la fenêtre automatiquement une fois le nom de l'annotation actualisé
-                        Stage stage = (Stage) nameTextField.getScene().getWindow();
+                        //Stage stage = (Stage) nameTextField.getScene().getWindow();
+                        Stage stage = InterfaceController.getSharedRenameAnnotationStage();
                         stage.close();
 
                         nameTextField.setText("");
