@@ -584,6 +584,12 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
                             Scene scene = new Scene(loader.load());
                             modifyClassStage.setScene(scene);
 
+                            // Récupérer le contrôleur
+                            ModifyClassController controller = loader.getController();
+
+                            // Appeler la méthode update_ComboBox sur le contrôleur
+                            controller.update_ComboBox();
+
                             modifyClassStage.initStyle(StageStyle.UTILITY);
                             modifyClassStage.initModality(Modality.APPLICATION_MODAL);
                             modifyClassStage.initOwner(areaLabel.getScene().getWindow());
