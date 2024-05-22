@@ -212,27 +212,42 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
      * @throws IOException exception during the opening of a stage.
      */
     public void set_Class_Annotation_Stage() throws IOException {
-
-        QP quPathApplication;
-
         // We check if a project is opened or not.
-        if(QP.getProject() != null ){
+        if(getProject() != null ){
             try {
-                // We opened the stage.
-                var url = InterfaceController.class.getResource("ModifyClass.fxml");
-                FXMLLoader loader = new FXMLLoader(url);
-                set_Class_Annotation_Stage = new Stage();
-                Scene scene = new Scene(loader.load());
+                if(set_Class_Annotation_Stage == null)
+                {
+                    // We opened the stage.
+                    var url = InterfaceController.class.getResource("ModifyClass.fxml");
+                    FXMLLoader loader = new FXMLLoader(url);
+                    set_Class_Annotation_Stage = new Stage();
 
-                // Récupérer le contrôleur
-                ModifyClassController controller = loader.getController();
 
-                // Appeler la méthode update_ComboBox sur le contrôleur
-                controller.update_ComboBox();
+                    Scene scene = new Scene(loader.load());
 
-                set_Class_Annotation_Stage.setScene(scene);
-                set_Class_Annotation_Stage.setAlwaysOnTop(true);
-                set_Class_Annotation_Stage.show();
+                    set_Class_Annotation_Stage.setScene(scene);
+
+
+                    set_Class_Annotation_Stage.initStyle(StageStyle.UTILITY);
+                    set_Class_Annotation_Stage.setResizable(false);
+
+
+                    set_Class_Annotation_Stage.setAlwaysOnTop(true);
+
+                    // Récupérer le contrôleur
+                    ModifyClassController controller = loader.getController();
+
+                    // Appeler la méthode update_ComboBox sur le contrôleur
+                    controller.update_ComboBox();
+
+
+                    set_Class_Annotation_Stage.show();
+
+                }
+                else
+                {
+                    set_Class_Annotation_Stage.show();
+                }
             } catch (IOException e) {
                 Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
                 logger.error("Unable to load extension interface FXML", e);
@@ -240,11 +255,10 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
         }
         // If there is no project we display an error message.
         else {
-            System.out.println("Pas de projet");
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Erreur projet");
+            alert.setTitle("No open projects.");
             alert.setHeaderText(null);
-            alert.setContentText("Pour pouvoir utiliser cette fonctionnalité il faut qu'un projet soit ouvert.");
+            alert.setContentText("Please open a project before using this function.");
             alert.showAndWait();
         }
     }
