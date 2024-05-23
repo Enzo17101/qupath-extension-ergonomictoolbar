@@ -215,39 +215,16 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
         // We check if a project is opened or not.
         if(getProject() != null ){
             try {
-                if(set_Class_Annotation_Stage == null)
-                {
-                    // We opened the stage.
-                    var url = InterfaceController.class.getResource("ModifyClass.fxml");
-                    FXMLLoader loader = new FXMLLoader(url);
-                    set_Class_Annotation_Stage = new Stage();
-
-
-                    Scene scene = new Scene(loader.load());
-
-                    set_Class_Annotation_Stage.setScene(scene);
-
-
-                    set_Class_Annotation_Stage.initStyle(StageStyle.UTILITY);
-                    set_Class_Annotation_Stage.setResizable(false);
-
-
-                    set_Class_Annotation_Stage.setAlwaysOnTop(true);
-
-                    // Récupérer le contrôleur
-                    ModifyClassController controller = loader.getController();
-
-                    // Appeler la méthode update_ComboBox sur le contrôleur
-                    controller.update_ComboBox();
-
-
-                    set_Class_Annotation_Stage.show();
-
-                }
-                else
-                {
-                    set_Class_Annotation_Stage.show();
-                }
+                // We opened the stage.
+                var url = InterfaceController.class.getResource("ModifyClass.fxml");
+                FXMLLoader loader = new FXMLLoader(url);
+                set_Class_Annotation_Stage = new Stage();
+                Scene scene = new Scene(loader.load());
+                set_Class_Annotation_Stage.setScene(scene);
+                set_Class_Annotation_Stage.initStyle(StageStyle.UTILITY);
+                set_Class_Annotation_Stage.setResizable(false);
+                set_Class_Annotation_Stage.setAlwaysOnTop(true);
+                set_Class_Annotation_Stage.show();
             } catch (IOException e) {
                 Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
                 logger.error("Unable to load extension interface FXML", e);
