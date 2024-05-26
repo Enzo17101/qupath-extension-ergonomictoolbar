@@ -119,9 +119,6 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
     @FXML
     private void renameAnnotation() {
 
-        boolean validUsage = true;
-        String alertTitle = null;
-        String alertMessage = null;
         if(getProject() != null)
         {
             if(getCurrentHierarchy() != null)
@@ -169,34 +166,17 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
                 }
                 else
                 {
-                    validUsage = false;
-                    alertTitle = "No annotation selected";
-                    alertMessage = "Please select an annotation before using this function.";
+                    noAnnotation();
                 }
             }
             else
             {
-                validUsage = false;
-                alertTitle = "No file open";
-                alertMessage = "Please open a file before using this function.";
+               noFile();
             }
-
         }
-        // If there is no project we display an error message.
         else
         {
-            validUsage = false;
-            alertTitle = "No open projects";
-            alertMessage = "Please open a project before using this function.";
-        }
-
-        if(!validUsage)
-        {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle(alertTitle);
-            alert.setHeaderText(null);
-            alert.setContentText(alertMessage);
-            alert.showAndWait();
+            noProject();
         }
     }
 
