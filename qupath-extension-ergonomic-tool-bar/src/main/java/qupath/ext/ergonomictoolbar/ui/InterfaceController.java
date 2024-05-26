@@ -19,9 +19,12 @@ import qupath.lib.gui.QuPathApp;
 import qupath.lib.gui.QuPathGUI;
 import qupath.lib.gui.commands.Commands;
 import qupath.lib.gui.measure.ObservableMeasurementTableData;
+import qupath.lib.gui.panes.PathObjectHierarchyView;
 import qupath.lib.gui.viewer.QuPathViewerListener;
 import qupath.lib.images.ImageData;
 import qupath.lib.objects.PathObject;
+import qupath.lib.objects.hierarchy.events.PathObjectHierarchyEvent;
+import qupath.lib.objects.hierarchy.events.PathObjectHierarchyListener;
 import qupath.lib.objects.hierarchy.events.PathObjectSelectionListener;
 import qupath.lib.gui.viewer.QuPathViewer;
 import qupath.lib.scripting.QP;
@@ -49,12 +52,13 @@ import java.util.ResourceBundle;
 import static java.lang.Math.round;
 import static qupath.lib.gui.scripting.QPEx.getQuPath;
 import static qupath.lib.scripting.QP.*;
+import static qupath.lib.scripting.QP.getCurrentHierarchy;
 
 /**
  * Controller for UI pane contained in interface.fxml
  */
 
-public class InterfaceController extends VBox implements PathObjectSelectionListener, QuPathViewerListener {
+public class InterfaceController extends VBox implements PathObjectSelectionListener, QuPathViewerListener, PathObjectHierarchyListener {
 
 
     /**
@@ -73,6 +77,13 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
      * Logger user to save report the error into logs
      */
     private static final Logger logger = LoggerFactory.getLogger(ErgonomicToolBarExtension.class);
+
+    /**
+     * Stage for the createAnnotation view
+     */
+    private static Stage createAnnotationStage;
+
+    private static CreateAnnotationController createAnnotationController;
 
     /**
      * Stage for the renameAnnotation view
@@ -124,6 +135,18 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
             Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
             logger.error("Unable to load extension interface FXML", e);
         }
+    }
+
+    /**
+     * @return the create annotation stage
+     */
+    public static Stage getSharedCreateAnnotationStage() {
+        if (createAnnotationStage == null) {
+            createAnnotationStage = new Stage();
+            createAnnotationStage.setResizable(false);
+            createAnnotationStage.initStyle(StageStyle.UTILITY); // Change this as needed
+        }
+        return createAnnotationStage;
     }
 
     /**
@@ -290,6 +313,11 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
     @Override
     public void selectedPathObjectChanged(PathObject pathObjectSelected, PathObject previousObject, Collection<PathObject> allSelected) {
 
+        //TODO REFACTOR
+        annotationNumber = getCurrentHierarchy().getAnnotationObjects().size();
+
+
+
         if (pathObjectSelected == null){
             areaLabel.setText("...");
             areaMagnitudeLabel.setText("");
@@ -353,9 +381,14 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
             if(getQuPath().getImageData() != null){
                 getQuPath().getImageData().getHierarchy().getSelectionModel().removePathObjectSelectionListener(this);
                 getQuPath().getImageData().getHierarchy().getSelectionModel().addPathObjectSelectionListener(this);
+
+                getQuPath().getImageData().getHierarchy().removeListener(this);
+                getQuPath().getImageData().getHierarchy().addListener(this);
             }
 
         }
+
+
     }
 
     //We herit from an abstract class so we have to define those methods
@@ -364,11 +397,6 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
 
     }
 
-    //We herit from an abstract class so we have to define those methods
-    @Override
-    public void selectedObjectChanged(QuPathViewer viewer, PathObject pathObjectSelected) {
-
-    }
 
     //We herit from an abstract class so we have to define those methods
     @Override
@@ -503,61 +531,6 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
         }
     }
 
-    /**
-     * This method creates a rectangular ROI (Region of Interest) with predefined dimensions.
-     * It calculates the rectangle's dimensions in pixels, centers it in the viewer,
-     * and creates an annotation with the specified size.
-     */
-    @FXML
-    private void createPredefinedSizedRectangularROI() {
-        QuPathGUI gui = QuPathGUI.getInstance();
-        QuPathViewer viewer = gui.getViewer();
-        ImageData<?> imageData = gui.getImageData();
-
-        // If the image data exists
-        if (imageData != null) {
-            // Dimensions of the rectangle
-            int widthInPixels, heightInPixels;
-
-            // If dimensions are already in pixels
-            if (rectangular_selection_size_in_pixels) {
-                widthInPixels = rectangular_selection_width;
-                heightInPixels = rectangular_selection_height;
-            } else { // Convert dimensions from millimeters to pixels
-                PixelCalibration cal = imageData.getServer().getPixelCalibration();
-                widthInPixels = (rectangular_selection_width / (int)cal.getPixelWidthMicrons()) * 1000;
-                heightInPixels = (rectangular_selection_height / (int)cal.getPixelHeightMicrons()) * 1000;
-            }
-
-            // Coordinates of the center of the viewer
-            int centerX = (int)viewer.getCenterPixelX();
-            int centerY = (int)viewer.getCenterPixelY();
-
-            // Calculate the starting coordinates of the rectangle
-            int x = centerX - widthInPixels / 2;
-            int y = centerY - heightInPixels / 2;
-
-            // Create an instance of ImageRegion
-            ImageRegion imageRegion = ImageRegion.createInstance(x, y, widthInPixels, heightInPixels, 0, 0);
-
-            // Use the createRectangleROI method to create the ROI
-            ROI rectangleROI = ROIs.createRectangleROI(imageRegion);
-
-            // Create an annotation from the ROI
-            PathObject annotation = PathObjects.createAnnotationObject(rectangleROI);
-
-            // Add the annotation to the image
-            imageData.getHierarchy().addObject(annotation);
-
-            // Update the display
-            imageData.getHierarchy().fireHierarchyChangedEvent(this);
-            viewer.repaint();
-        }
-
-        // Switch to the move tool
-        viewer.setActiveTool(PathTools.MOVE);
-        gui.getToolManager().setSelectedTool(PathTools.MOVE);
-    }
 
     @FXML
     private void createZoomRectangularROI() {
@@ -610,10 +583,175 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
             // Update the display
             imageData.getHierarchy().fireHierarchyChangedEvent(this);
             viewer.repaint();
+            getCurrentHierarchy().getSelectionModel().setSelectedObject(annotation);
         }
 
         // Switch to the move tool
         viewer.setActiveTool(PathTools.MOVE);
         gui.getToolManager().setSelectedTool(PathTools.MOVE);
+    }
+
+
+
+    /**
+     * This method creates a rectangular ROI (Region of Interest) with predefined dimensions.
+     * It calculates the rectangle's dimensions in pixels, centers it in the viewer,
+     * and creates an annotation with the specified size.
+     */
+    @FXML
+    private void createPredefinedSizedRectangularROI() {
+        QuPathGUI gui = QuPathGUI.getInstance();
+        QuPathViewer viewer = gui.getViewer();
+        ImageData<?> imageData = gui.getImageData();
+
+        // If the image data exists
+        if (imageData != null) {
+            // Dimensions of the rectangle
+            int widthInPixels, heightInPixels;
+
+            // If dimensions are already in pixels
+            if (rectangular_selection_size_in_pixels) {
+                widthInPixels = rectangular_selection_width;
+                heightInPixels = rectangular_selection_height;
+            } else { // Convert dimensions from millimeters to pixels
+                PixelCalibration cal = imageData.getServer().getPixelCalibration();
+                widthInPixels = (rectangular_selection_width / (int)cal.getPixelWidthMicrons()) * 1000;
+                heightInPixels = (rectangular_selection_height / (int)cal.getPixelHeightMicrons()) * 1000;
+            }
+
+            // Coordinates of the center of the viewer
+            int centerX = (int)viewer.getCenterPixelX();
+            int centerY = (int)viewer.getCenterPixelY();
+
+            // Calculate the starting coordinates of the rectangle
+            int x = centerX - widthInPixels / 2;
+            int y = centerY - heightInPixels / 2;
+
+            // Create an instance of ImageRegion
+            ImageRegion imageRegion = ImageRegion.createInstance(x, y, widthInPixels, heightInPixels, 0, 0);
+
+            // Use the createRectangleROI method to create the ROI
+            ROI rectangleROI = ROIs.createRectangleROI(imageRegion);
+
+            // Create an annotation from the ROI
+            PathObject annotation = PathObjects.createAnnotationObject(rectangleROI);
+
+            // Add the annotation to the image
+            imageData.getHierarchy().addObject(annotation);
+
+            // Update the display
+            imageData.getHierarchy().fireHierarchyChangedEvent(this);
+            viewer.repaint();
+            getCurrentHierarchy().getSelectionModel().setSelectedObject(annotation);
+        }
+
+        // Switch to the move tool
+        viewer.setActiveTool(PathTools.MOVE);
+        gui.getToolManager().setSelectedTool(PathTools.MOVE);
+
+    }
+
+
+
+    private static boolean inCreation = false;
+
+    private static int annotationNumber;
+
+    @FXML
+    private void initialize()
+    {
+        annotationNumber = 0;
+        if(getCurrentHierarchy() != null)
+        {
+            annotationNumber = getCurrentHierarchy().getAnnotationObjects().size();
+        }
+
+        createAnnotationController = new CreateAnnotationController();
+    }
+
+    @Override
+    public void hierarchyChanged(PathObjectHierarchyEvent event) {
+
+        if(event.getEventType().equals(PathObjectHierarchyEvent.HierarchyEventType.ADDED))
+        {
+            //Permit to avoid function call when we move an annotation
+            if(annotationNumber < getCurrentHierarchy().getAnnotationObjects().size())
+            {
+                createAnnotation(event.getChangedObjects().get(event.getChangedObjects().size() - 1));
+            }
+        }
+    }
+
+
+    //We herit from an abstract class so we have to define those methods
+    @Override
+    public void selectedObjectChanged(QuPathViewer viewer, PathObject pathObjectSelected) {
+
+    }
+
+    private void createAnnotation(PathObject object) {
+
+        if(getProject() != null)
+        {
+            if(getCurrentHierarchy() != null)
+            {
+                if(object != null)
+                {
+                    try {
+                        if (createAnnotationStage == null) {
+                            // If the renameAnnotation window doesn't exist, we create it
+                            var url = InterfaceController.class.getResource("CreateAnnotation.fxml");
+                            FXMLLoader loader = new FXMLLoader(url);
+
+                            loader.setController(createAnnotationController);
+                            createAnnotationController.setObject(object);
+
+                            createAnnotationStage = new Stage();
+
+                            Scene scene = new Scene(loader.load());
+                            createAnnotationStage.setScene(scene);
+
+                            createAnnotationStage.initStyle(StageStyle.UTILITY);
+                            createAnnotationStage.setResizable(false);
+
+                            Stage quPathStage = QuPathGUI.getInstance().getStage();
+
+                            //It is set alway on top only if the application is showing
+                            quPathStage.focusedProperty().addListener((observableValue, onHidden, onShown) -> {
+                                if(onHidden || createAnnotationStage.isFocused())
+                                {
+                                    createAnnotationStage.setAlwaysOnTop(false);
+                                }
+                                if(onShown)
+                                {
+                                    createAnnotationStage.setAlwaysOnTop(true);
+                                }
+                            });
+                            createAnnotationStage.show();
+                        }
+                        else {
+                            createAnnotationController.setObject(object);
+                            createAnnotationStage.show();
+                        }
+                    }
+                    catch (IOException e) {
+                        Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
+                        logger.error("Unable to load extension interface FXML", e);
+                    }
+                }
+                else
+                {
+                    noAnnotation();
+                }
+            }
+            else
+            {
+                noFile();
+            }
+        }
+        else
+        {
+            noProject();
+        }
     }
 }
