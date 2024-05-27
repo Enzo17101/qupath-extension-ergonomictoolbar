@@ -102,39 +102,37 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
      */
     private static boolean currentOrientation = true;//vertical by default
 
-    @FXML
-    private void toggleToolbarOrientation() {
-        boolean newOrientation = !currentOrientation;
-        String fxmlPath = "/qupath/ext/ergonomictoolbar/ui/" + (newOrientation ? "VerticalInterface.fxml" : "HorizontalInterface.fxml");
 
-        try {
-            //Recreate the extension with the new orientation
-            Stage stage = ErgonomicToolBarExtension.getSharedStage(newOrientation);
+    /**
+     * true when the user is creating an annotation
+     */
+    private static boolean inCreation = false;
 
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+    /**
+     * number of annotation currently loaded
+     */
+    private static int annotationNumber;
 
-            loader.setController(new InterfaceController());
-
-            Scene scene = new Scene(loader.load());
-
-            // Update orientation for the next toggle
-            currentOrientation = newOrientation;
-
-            stage.setScene(scene);
-            stage.initStyle(StageStyle.UTILITY);
-            stage.show();
-
-            if(getCurrentHierarchy() != null)
-            {
-                if(getCurrentHierarchy().getSelectionModel().getSelectedObject() != null)
-                {
-                    getCurrentHierarchy().getSelectionModel().setSelectedObject(getCurrentHierarchy().getSelectionModel().getSelectedObject());
-                }
+    public InterfaceController() throws IOException {
+        if(getQuPath() != null) {
+            getQuPath().getViewer().addViewerListener(this);
+            if(getQuPath().getImageData() != null){
+                getQuPath().getImageData().getHierarchy().getSelectionModel().addPathObjectSelectionListener(this);
+                getQuPath().getImageData().getHierarchy().addListener(this);
             }
-        } catch (IOException e) {
-            Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
-            logger.error("Unable to load extension interface FXML", e);
         }
+    }
+
+    @FXML
+    private void initialize()
+    {
+        annotationNumber = 0;
+        if(getCurrentHierarchy() != null)
+        {
+            annotationNumber = getCurrentHierarchy().getAnnotationObjects().size();
+        }
+
+        createAnnotationController = new CreateAnnotationController();
     }
 
     /**
@@ -161,9 +159,70 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
         return renameAnnotationStage;
     }
 
+    /**
+     * @return The modify class stage
+     */
+    public static Stage getSharedSetClassAnnotationStage() {
+        if (modifyClassStage == null) {
+            modifyClassStage = new Stage();
+            modifyClassStage.setResizable(false);
+            modifyClassStage.initStyle(StageStyle.UTILITY); // Change this as needed
+        }
+        return modifyClassStage;
+    }
+
+
+    @Override
+    public void imageDataChanged(QuPathViewer viewer, ImageData<BufferedImage> imageDataOld, ImageData<BufferedImage> imageDataNew) {
+        //Pour éviter les problèmes si aucune image n'est ouverte
+        //Demandera de rafraichir l'extension (en changeant l'orientation par exemple)
+        System.out.println("image changed");
+        if(getQuPath() != null){
+            if(getQuPath().getImageData() != null){
+                getQuPath().getImageData().getHierarchy().getSelectionModel().removePathObjectSelectionListener(this);
+                getQuPath().getImageData().getHierarchy().getSelectionModel().addPathObjectSelectionListener(this);
+
+                getQuPath().getImageData().getHierarchy().removeListener(this);
+                getQuPath().getImageData().getHierarchy().addListener(this);
+            }
+        }
+    }
+
+    //We herit from an abstract class so we have to define those methods
+    @Override
+    public void visibleRegionChanged(QuPathViewer viewer, Shape shape) {
+
+    }
+
+
+    //We herit from an abstract class so we have to define those methods
+    @Override
+    public void viewerClosed(QuPathViewer viewer) {
+
+    }
+
+    @Override
+    public void hierarchyChanged(PathObjectHierarchyEvent event) {
+        if(event.getEventType().equals(PathObjectHierarchyEvent.HierarchyEventType.ADDED))
+        {
+            //Permit to avoid function call when we move an annotation
+            if(annotationNumber < getCurrentHierarchy().getAnnotationObjects().size())
+            {
+                createAnnotation(event.getChangedObjects().get(event.getChangedObjects().size() - 1));
+            }
+        }
+    }
+
+
+    //We herit from an abstract class so we have to define those methods
+    @Override
+    public void selectedObjectChanged(QuPathViewer viewer, PathObject pathObjectSelected) {
+
+    }
+
+
     @FXML
     private void renameAnnotation() {
-
         if(getProject() != null)
         {
             if(getCurrentHierarchy() != null)
@@ -253,17 +312,6 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
         }
     }
 
-    /**
-     * @return The modify class stage
-     */
-    public Stage getSharedSetClassAnnotationStage() {
-        if (modifyClassStage == null) {
-            modifyClassStage = new Stage();
-            modifyClassStage.setResizable(false);
-            modifyClassStage.initStyle(StageStyle.UTILITY); // Change this as needed
-        }
-        return modifyClassStage;
-    }
 
     /**
      * This method allows to open the stage for set the class of an annotation.
@@ -348,62 +396,16 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
         }
     }
 
-    public InterfaceController() throws IOException {
-        if(getQuPath() != null) {
-            getQuPath().getViewer().addViewerListener(this);
-            if(getQuPath().getImageData() != null){
-                 getQuPath().getImageData().getHierarchy().getSelectionModel().addPathObjectSelectionListener(this);
-            }
-        }
-    }
-
-    public static InterfaceController createInstance() throws IOException {
-        return new InterfaceController();
-    }
-
     /**
      * Sauvegarde l'image actuelle
      */
-    public void save_Project(){
-
+    public void saveProject(){
         if(getQuPath() != null) {
             if (getQuPath().getImageData() != null) {
                 Commands.promptToSaveImageData(getQuPath(),getQuPath().getImageData(),true);
             }
         }
     }
-
-    @Override
-    public void imageDataChanged(QuPathViewer viewer, ImageData<BufferedImage> imageDataOld, ImageData<BufferedImage> imageDataNew) {
-        //Pour éviter les problèmes si aucune image n'est ouverte
-        //Demandera de rafraichir l'extension (en changeant l'orientation par exemple)
-        if(getQuPath() != null){
-            if(getQuPath().getImageData() != null){
-                getQuPath().getImageData().getHierarchy().getSelectionModel().removePathObjectSelectionListener(this);
-                getQuPath().getImageData().getHierarchy().getSelectionModel().addPathObjectSelectionListener(this);
-
-                getQuPath().getImageData().getHierarchy().removeListener(this);
-                getQuPath().getImageData().getHierarchy().addListener(this);
-            }
-
-        }
-
-
-    }
-
-    //We herit from an abstract class so we have to define those methods
-    @Override
-    public void visibleRegionChanged(QuPathViewer viewer, Shape shape) {
-
-    }
-
-
-    //We herit from an abstract class so we have to define those methods
-    @Override
-    public void viewerClosed(QuPathViewer viewer) {
-
-    }
-
 
     @FXML
     private void toggleLockAnnotation() {
@@ -419,10 +421,7 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
                 viewer.getHierarchy().fireHierarchyChangedEvent(selectedObject);
             }
         } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setHeaderText(null);
-            alert.setContentText("No annotation is selected.");
-            alert.showAndWait();
+            noAnnotation();
         }
     }
 
@@ -653,40 +652,40 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
 
 
 
-    private static boolean inCreation = false;
-
-    private static int annotationNumber;
 
     @FXML
-    private void initialize()
-    {
-        annotationNumber = 0;
-        if(getCurrentHierarchy() != null)
-        {
-            annotationNumber = getCurrentHierarchy().getAnnotationObjects().size();
-        }
+    private void toggleToolbarOrientation() {
+        boolean newOrientation = !currentOrientation;
+        String fxmlPath = "/qupath/ext/ergonomictoolbar/ui/" + (newOrientation ? "VerticalInterface.fxml" : "HorizontalInterface.fxml");
 
-        createAnnotationController = new CreateAnnotationController();
-    }
+        try {
+            //Recreate the extension with the new orientation
+            Stage stage = ErgonomicToolBarExtension.getSharedStage(newOrientation);
 
-    @Override
-    public void hierarchyChanged(PathObjectHierarchyEvent event) {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
 
-        if(event.getEventType().equals(PathObjectHierarchyEvent.HierarchyEventType.ADDED))
-        {
-            //Permit to avoid function call when we move an annotation
-            if(annotationNumber < getCurrentHierarchy().getAnnotationObjects().size())
+            loader.setController(new InterfaceController());
+
+            Scene scene = new Scene(loader.load());
+
+            // Update orientation for the next toggle
+            currentOrientation = newOrientation;
+
+            stage.setScene(scene);
+            stage.initStyle(StageStyle.UTILITY);
+            stage.show();
+
+            if(getCurrentHierarchy() != null)
             {
-                createAnnotation(event.getChangedObjects().get(event.getChangedObjects().size() - 1));
+                if(getCurrentHierarchy().getSelectionModel().getSelectedObject() != null)
+                {
+                    getCurrentHierarchy().getSelectionModel().setSelectedObject(getCurrentHierarchy().getSelectionModel().getSelectedObject());
+                }
             }
+        } catch (IOException e) {
+            Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
+            logger.error("Unable to load extension interface FXML", e);
         }
-    }
-
-
-    //We herit from an abstract class so we have to define those methods
-    @Override
-    public void selectedObjectChanged(QuPathViewer viewer, PathObject pathObjectSelected) {
-
     }
 
     private void createAnnotation(PathObject object) {
