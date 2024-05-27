@@ -50,7 +50,7 @@
                   <Font name="System Bold" size="10.0" />
                </font>
             </Button>
-            <Button alignment="CENTER" layoutX="15.0" layoutY="233.0" maxHeight="30.0" maxWidth="60.0" minHeight="30.0" minWidth="60.0" mnemonicParsing="false" onAction="#set_Class_Annotation_Stage" prefHeight="30.0" prefWidth="60.0" text="Set Class" textAlignment="CENTER" wrapText="true">
+            <Button alignment="CENTER" layoutX="15.0" layoutY="233.0" maxHeight="30.0" maxWidth="60.0" minHeight="30.0" minWidth="60.0" mnemonicParsing="false" onAction="#setClassAnnotationStage" prefHeight="30.0" prefWidth="60.0" text="Set Class" textAlignment="CENTER" wrapText="true">
                <font>
                   <Font name="System Bold" size="10.0" />
                </font>

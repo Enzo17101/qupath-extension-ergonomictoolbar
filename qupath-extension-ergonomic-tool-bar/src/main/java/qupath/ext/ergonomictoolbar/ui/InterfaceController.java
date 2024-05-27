@@ -8,6 +8,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.slf4j.Logger;
@@ -139,11 +140,6 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
      * @return the create annotation stage
      */
     public static Stage getSharedCreateAnnotationStage() {
-        if (createAnnotationStage == null) {
-            createAnnotationStage = new Stage();
-            createAnnotationStage.setResizable(false);
-            createAnnotationStage.initStyle(StageStyle.UTILITY); // Change this as needed
-        }
         return createAnnotationStage;
     }
 
@@ -151,26 +147,16 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
      * @return the rename annotation stage
      */
     public static Stage getSharedRenameAnnotationStage() {
-        if (renameAnnotationStage == null) {
-            renameAnnotationStage = new Stage();
-            renameAnnotationStage.setResizable(false);
-            renameAnnotationStage.initStyle(StageStyle.UTILITY); // Change this as needed
-        }
         return renameAnnotationStage;
     }
 
+    //TODO use it
     /**
      * @return The modify class stage
      */
     public static Stage getSharedSetClassAnnotationStage() {
-        if (modifyClassStage == null) {
-            modifyClassStage = new Stage();
-            modifyClassStage.setResizable(false);
-            modifyClassStage.initStyle(StageStyle.UTILITY); // Change this as needed
-        }
         return modifyClassStage;
     }
-
 
     @Override
     public void imageDataChanged(QuPathViewer viewer, ImageData<BufferedImage> imageDataOld, ImageData<BufferedImage> imageDataNew) {
@@ -188,6 +174,13 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
         }
     }
 
+
+    //We herit from an abstract class so we have to define those methods
+    @Override
+    public void selectedObjectChanged(QuPathViewer viewer, PathObject pathObjectSelected) {
+
+    }
+
     //We herit from an abstract class so we have to define those methods
     @Override
     public void visibleRegionChanged(QuPathViewer viewer, Shape shape) {
@@ -199,6 +192,44 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
     @Override
     public void viewerClosed(QuPathViewer viewer) {
 
+    }
+
+    /**
+     * Return area when annotations have been selected
+     */
+    @Override
+    public void selectedPathObjectChanged(PathObject pathObjectSelected, PathObject previousObject, Collection<PathObject> allSelected) {
+        System.out.println("test");
+        annotationNumber = getCurrentHierarchy().getAnnotationObjects().size();
+
+        if (pathObjectSelected == null){
+            areaLabel.setText("...");
+            areaMagnitudeLabel.setText("");
+        }
+        else {
+            // Here goes your selection change logic
+            ImageData<BufferedImage> imageData = getCurrentImageData();
+
+            Collection<PathObject> tissues = getAnnotationObjects();
+            ObservableMeasurementTableData ob = new ObservableMeasurementTableData();
+            ob.setImageData(imageData, tissues);
+            String area = "Area µm^2";
+            double annotationArea = ob.getNumericValue(getCurrentHierarchy().getSelectionModel().getSelectedObject(), area);
+            String magnitude;
+            double aire;
+            if (annotationArea < 10000){
+                aire = (double) round(annotationArea*100)/100;
+                magnitude = " μm²";
+            }
+            else{
+                double roundArea = (double) round(annotationArea/1000)*1000;
+                aire= roundArea / 1000000;
+                magnitude = " mm²";
+            }
+
+            areaLabel.setText(String.valueOf(aire));
+            areaMagnitudeLabel.setText(magnitude);
+        }
     }
 
     @Override
@@ -213,14 +244,9 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
         }
     }
 
-
-    //We herit from an abstract class so we have to define those methods
-    @Override
-    public void selectedObjectChanged(QuPathViewer viewer, PathObject pathObjectSelected) {
-
-    }
-
-
+    /**
+     * This method allow to rename the selected annotation
+     */
     @FXML
     private void renameAnnotation() {
         if(getProject() != null)
@@ -242,11 +268,13 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
                             renameAnnotationStage.setScene(scene);
 
                             renameAnnotationStage.initStyle(StageStyle.UTILITY);
+                            renameAnnotationStage.initModality(Modality.APPLICATION_MODAL);
+                            renameAnnotationStage.initOwner(areaLabel.getScene().getWindow());
                             renameAnnotationStage.setResizable(false);
 
                             Stage quPathStage = QuPathGUI.getInstance().getStage();
 
-                            //It is set alway on top only if the application is showing
+                            // The stage is on top only if the application is showing
                             quPathStage.focusedProperty().addListener((observableValue, onHidden, onShown) -> {
                                 if(onHidden || renameAnnotationStage.isFocused())
                                 {
@@ -285,40 +313,41 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
     }
 
     /**
-     * This method allows to display or hide filling of all the annotations according to their current state.
-     */
-    public void displayOrHideFilling()
-    {
-        QuPathViewer viewer = QuPathGUI.getInstance().getViewer();
-
-        if(viewer != null)
-        {
-            boolean fillingDisplay = !QuPathGUI.getInstance().getOverlayOptions().getFillAnnotations();
-            viewer.getOverlayOptions().setFillAnnotations(fillingDisplay);
-        }
-    }
-
-    /**
-     * This method allows to display or hide names of all the annotations according to their current state.
-     */
-    public void displayOrHideNames()
-    {
-        QuPathViewer viewer = QuPathGUI.getInstance().getViewer();
-
-        if(viewer != null)
-        {
-            boolean nameDisplay = !QuPathGUI.getInstance().getOverlayOptions().getShowNames();
-            viewer.getOverlayOptions().setShowNames(nameDisplay);
-        }
-    }
-
-
-    /**
      * This method allows to open the stage for set the class of an annotation.
      * @throws IOException exception during the opening of a stage.
      */
-    public void set_Class_Annotation_Stage() throws IOException {
+    public void setClassAnnotationStage() throws IOException {
 
+        /*
+        if(getProject() != null)
+        {
+            if (getCurrentHierarchy() != null)
+            {
+                if (getCurrentHierarchy().getSelectionModel().getSelectedObject() != null)
+                {
+                    try
+                    {
+
+                    }
+                    catch (IOException e)
+                    {
+                        Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
+                        logger.error("Unable to load extension interface FXML", e);
+                    }
+                }
+                else
+                {
+                    noAnnotation();
+                }
+            } else
+            {
+                noFile();
+            }
+        }
+        else
+        {
+            noProject();
+        }*/
         QP quPathApplication;
 
         // We check if the stage is null or not in order to not display it twice.
@@ -356,43 +385,30 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
     }
 
     /**
-     * Return area when annotations have been selected
+     * This method allows to display or hide filling of all the annotations according to their current state.
      */
-    @Override
-    public void selectedPathObjectChanged(PathObject pathObjectSelected, PathObject previousObject, Collection<PathObject> allSelected) {
+    public void displayOrHideFilling()
+    {
+        QuPathViewer viewer = QuPathGUI.getInstance().getViewer();
 
-        //TODO REFACTOR
-        annotationNumber = getCurrentHierarchy().getAnnotationObjects().size();
-
-
-
-        if (pathObjectSelected == null){
-            areaLabel.setText("...");
-            areaMagnitudeLabel.setText("");
+        if(viewer != null)
+        {
+            boolean fillingDisplay = !QuPathGUI.getInstance().getOverlayOptions().getFillAnnotations();
+            viewer.getOverlayOptions().setFillAnnotations(fillingDisplay);
         }
-        else {
-            // Here goes your selection change logic
-            ImageData<BufferedImage> imageData = getCurrentImageData();
+    }
 
-            Collection<PathObject> tissues = getAnnotationObjects();
-            ObservableMeasurementTableData ob = new ObservableMeasurementTableData();
-            ob.setImageData(imageData, tissues);
-            String area = "Area µm^2";
-            double annotationArea = ob.getNumericValue(getCurrentHierarchy().getSelectionModel().getSelectedObject(), area);
-            String magnitude;
-            double aire;
-            if (annotationArea < 10000){
-                aire = (double) round(annotationArea*100)/100;
-                magnitude = " μm²";
-            }
-            else{
-                double roundArea = (double) round(annotationArea/1000)*1000;
-                aire= roundArea / 1000000;
-                magnitude = " mm²";
-            }
+    /**
+     * This method allows to display or hide names of all the annotations according to their current state.
+     */
+    public void displayOrHideNames()
+    {
+        QuPathViewer viewer = QuPathGUI.getInstance().getViewer();
 
-            areaLabel.setText(String.valueOf(aire));
-            areaMagnitudeLabel.setText(magnitude);
+        if(viewer != null)
+        {
+            boolean nameDisplay = !QuPathGUI.getInstance().getOverlayOptions().getShowNames();
+            viewer.getOverlayOptions().setShowNames(nameDisplay);
         }
     }
 
@@ -673,6 +689,7 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
 
             stage.setScene(scene);
             stage.initStyle(StageStyle.UTILITY);
+            stage.initOwner(QuPathGUI.getInstance().getStage().getScene().getWindow());
             stage.show();
 
             if(getCurrentHierarchy() != null)

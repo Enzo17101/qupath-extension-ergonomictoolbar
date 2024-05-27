@@ -8,6 +8,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.MenuItem;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
@@ -195,6 +196,7 @@ public class ErgonomicToolBarExtension implements QuPathExtension, GitHubProject
 				stage.setScene(scene);
 				stage.setResizable(false);
 				stage.initStyle(StageStyle.UTILITY);
+				stage.initOwner(QuPathGUI.getInstance().getStage().getScene().getWindow());
 				initSetAlwaysOnTop();
 
 			} catch (IOException e) {
