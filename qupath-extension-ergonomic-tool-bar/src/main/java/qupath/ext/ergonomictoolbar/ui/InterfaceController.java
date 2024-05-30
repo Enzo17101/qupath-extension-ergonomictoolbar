@@ -161,6 +161,9 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
         return modifyClassStage;
     }
 
+
+    //-------------------HERE GOES YOUR EVENT HANDLERS FOR TO THE TOOLBAR -------------------
+
     @Override
     public void imageDataChanged(QuPathViewer viewer, ImageData<BufferedImage> imageDataOld, ImageData<BufferedImage> imageDataNew) {
         //Pour éviter les problèmes si aucune image n'est ouverte
@@ -248,6 +251,7 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
     }
 
 
+    //--------------------HERE GOES YOUR FUNCTIONS LINKED TO THE TOOLBAR --------------------
 
     /**
      * This method activates the tool to create a polygon ROI (Region of Interest) in the viewer.
@@ -678,19 +682,6 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
         }
     }
 
-    /**
-     * Save the project
-     */
-    public void saveProject(){
-        if(getQuPath() != null) {
-            if (getQuPath().getImageData() != null) {
-                Commands.promptToSaveImageData(getQuPath(),getQuPath().getImageData(),true);
-            }
-        }
-    }
-
-
-
 
     @FXML
     private void toggleToolbarOrientation() {
@@ -727,6 +718,20 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
             logger.error("Unable to load extension interface FXML", e);
         }
     }
+
+    /**
+     * Save the project
+     */
+    public void saveProject(){
+        if(getQuPath() != null) {
+            if (getQuPath().getImageData() != null) {
+                Commands.promptToSaveImageData(getQuPath(),getQuPath().getImageData(),true);
+            }
+        }
+    }
+
+
+    //----------------------HERE GOES YOUR ERROR MESSAGES FOR THE USER ----------------------
 
     /**
      * Display an error for when there is no open project
