@@ -246,206 +246,7 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
         }
     }
 
-    /**
-     * This method allow to rename the selected annotation
-     */
-    @FXML
-    private void renameAnnotation() {
-        if(getProject() != null)
-        {
-            if(getCurrentHierarchy() != null)
-            {
-                if(getCurrentHierarchy().getSelectionModel().getSelectedObject() != null)
-                {
-                    try {
-                        if (renameAnnotationStage == null) {
-                            // If the renameAnnotation window doesn't exist, we create it
-                            var url = InterfaceController.class.getResource("RenameAnnotation.fxml");
-                            FXMLLoader loader = new FXMLLoader(url);
-                            loader.setController(new RenameAnnotationController());
 
-                            renameAnnotationStage = new Stage();
-
-                            Scene scene = new Scene(loader.load());
-                            renameAnnotationStage.setScene(scene);
-
-                            renameAnnotationStage.initStyle(StageStyle.UTILITY);
-                            renameAnnotationStage.initModality(Modality.APPLICATION_MODAL);
-                            renameAnnotationStage.initOwner(areaLabel.getScene().getWindow());
-                            renameAnnotationStage.setResizable(false);
-
-                            Stage quPathStage = QuPathGUI.getInstance().getStage();
-
-                            /*
-                            // The stage is on top only if the application is showing
-                            quPathStage.focusedProperty().addListener((observableValue, onHidden, onShown) -> {
-                                if(onHidden || renameAnnotationStage.isFocused())
-                                {
-                                    renameAnnotationStage.setAlwaysOnTop(false);
-                                }
-                                if(onShown)
-                                {
-                                    renameAnnotationStage.setAlwaysOnTop(true);
-                                }
-                            });*/
-                            renameAnnotationStage.show();
-                        }
-                        else {
-                            renameAnnotationStage.show();
-                        }
-                    }
-                    catch (IOException e) {
-                        Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
-                        logger.error("Unable to load extension interface FXML", e);
-                    }
-                }
-                else
-                {
-                    noAnnotation();
-                }
-            }
-            else
-            {
-               noFile();
-            }
-        }
-        else
-        {
-            noProject();
-        }
-    }
-
-    /**
-     * This method allows to open the stage for set the class of an annotation.
-     * @throws IOException exception during the opening of a stage.
-     */
-    public void setClassAnnotationStage() throws IOException {
-
-        /*
-        if(getProject() != null)
-        {
-            if (getCurrentHierarchy() != null)
-            {
-                if (getCurrentHierarchy().getSelectionModel().getSelectedObject() != null)
-                {
-                    try
-                    {
-
-                    }
-                    catch (IOException e)
-                    {
-                        Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
-                        logger.error("Unable to load extension interface FXML", e);
-                    }
-                }
-                else
-                {
-                    noAnnotation();
-                }
-            } else
-            {
-                noFile();
-            }
-        }
-        else
-        {
-            noProject();
-        }*/
-        QP quPathApplication;
-
-        // We check if the stage is null or not in order to not display it twice.
-        if (modifyClassStage == null) {
-
-            // We check if a project is opened or not.
-            if(QP.getProject() != null ){
-                try {
-                    // We opened the stage.
-                    var url = InterfaceController.class.getResource("ModifyClass.fxml");
-                    FXMLLoader loader = new FXMLLoader(url);
-                    modifyClassStage = new Stage();
-                    Scene scene = new Scene(loader.load());
-                    modifyClassStage.setScene(scene);
-                    modifyClassStage.setAlwaysOnTop(true);
-                    modifyClassStage.show();
-                } catch (IOException e) {
-                    Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
-                    logger.error("Unable to load extension interface FXML", e);
-                }
-            }
-            // If there is no project we display an error message.
-            else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("No open projects.");
-                alert.setHeaderText(null);
-                alert.setContentText("Please open a project before using this function.");
-                alert.showAndWait();
-            }
-        }
-        else if(!modifyClassStage.isShowing())
-        {
-            modifyClassStage.show();
-        }
-    }
-
-    /**
-     * This method allows to display or hide filling of all the annotations according to their current state.
-     */
-    public void displayOrHideFilling()
-    {
-        QuPathViewer viewer = QuPathGUI.getInstance().getViewer();
-
-        if(viewer != null)
-        {
-            boolean fillingDisplay = !QuPathGUI.getInstance().getOverlayOptions().getFillAnnotations();
-            viewer.getOverlayOptions().setFillAnnotations(fillingDisplay);
-        }
-    }
-
-    /**
-     * This method allows to display or hide names of all the annotations according to their current state.
-     */
-    public void displayOrHideNames()
-    {
-        QuPathViewer viewer = QuPathGUI.getInstance().getViewer();
-
-        if(viewer != null)
-        {
-            boolean nameDisplay = !QuPathGUI.getInstance().getOverlayOptions().getShowNames();
-            viewer.getOverlayOptions().setShowNames(nameDisplay);
-        }
-    }
-
-    /**
-     * Save the project
-     */
-    public void saveProject(){
-        if(getQuPath() != null) {
-            if (getQuPath().getImageData() != null) {
-                Commands.promptToSaveImageData(getQuPath(),getQuPath().getImageData(),true);
-            }
-        }
-    }
-
-    /**
-     * This method allows to lock or unlock an annotation according to it current state.
-     */
-    @FXML
-    private void toggleLockAnnotation() {
-        QuPathGUI quPathGUI = QuPathGUI.getInstance();
-        QuPathViewer viewer = quPathGUI.getViewer();
-        if (viewer != null && viewer.getSelectedObject() != null) {
-            var selectedObject = viewer.getSelectedObject();
-            boolean isCurrentlyLocked = selectedObject.isLocked();
-            selectedObject.setLocked(!isCurrentlyLocked);
-
-            // Forcer la mise à jour de l'annotation pour refléter le changement dans l'interface utilisateur
-            if (viewer.getHierarchy() != null) {
-                viewer.getHierarchy().fireHierarchyChangedEvent(selectedObject);
-            }
-        } else {
-            noAnnotation();
-        }
-    }
 
     /**
      * This method activates the tool to create a polygon ROI (Region of Interest) in the viewer.
@@ -563,8 +364,6 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
         gui.getToolManager().setSelectedTool(PathTools.MOVE);
     }
 
-
-
     /**
      * This method creates a rectangular ROI (Region of Interest) with predefined dimensions.
      * It calculates the rectangle's dimensions in pixels, centers it in the viewer,
@@ -624,44 +423,10 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
     }
 
 
-
-
-    @FXML
-    private void toggleToolbarOrientation() {
-        boolean newOrientation = !currentOrientation;
-        String fxmlPath = "/qupath/ext/ergonomictoolbar/ui/" + (newOrientation ? "VerticalInterface.fxml" : "HorizontalInterface.fxml");
-
-        try {
-            //Recreate the extension with the new orientation
-            Stage stage = ErgonomicToolBarExtension.getSharedStage(newOrientation);
-
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-
-            loader.setController(new InterfaceController());
-
-            Scene scene = new Scene(loader.load());
-
-            // Update orientation for the next toggle
-            currentOrientation = newOrientation;
-
-            stage.setScene(scene);
-            stage.initStyle(StageStyle.UTILITY);
-            stage.initOwner(QuPathGUI.getInstance().getStage().getScene().getWindow());
-            stage.show();
-
-            if(getCurrentHierarchy() != null)
-            {
-                if(getCurrentHierarchy().getSelectionModel().getSelectedObject() != null)
-                {
-                    getCurrentHierarchy().getSelectionModel().setSelectedObject(getCurrentHierarchy().getSelectionModel().getSelectedObject());
-                }
-            }
-        } catch (IOException e) {
-            Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
-            logger.error("Unable to load extension interface FXML", e);
-        }
-    }
-
+    /**
+     * This method display a window which allow you to set the object properties
+     * @param object
+     */
     private void createAnnotation(PathObject object) {
 
         System.out.println("a : " + inCreation);
@@ -736,6 +501,218 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
         }
         //We set in creation at false to avoid the window from being displayed if we use the QuPath button to create another annotation
         inCreation = false;
+    }
+
+    /**
+     * This method allow to rename the selected annotation
+     */
+    @FXML
+    private void renameAnnotation() {
+        if(getProject() != null)
+        {
+            if(getCurrentHierarchy() != null)
+            {
+                if(getCurrentHierarchy().getSelectionModel().getSelectedObject() != null)
+                {
+                    try {
+                        if (renameAnnotationStage == null) {
+                            // If the renameAnnotation window doesn't exist, we create it
+                            var url = InterfaceController.class.getResource("RenameAnnotation.fxml");
+                            FXMLLoader loader = new FXMLLoader(url);
+                            loader.setController(new RenameAnnotationController());
+
+                            renameAnnotationStage = new Stage();
+
+                            Scene scene = new Scene(loader.load());
+                            renameAnnotationStage.setScene(scene);
+
+                            renameAnnotationStage.initStyle(StageStyle.UTILITY);
+                            renameAnnotationStage.initModality(Modality.APPLICATION_MODAL);
+                            renameAnnotationStage.initOwner(areaLabel.getScene().getWindow());
+                            renameAnnotationStage.setResizable(false);
+
+                            renameAnnotationStage.show();
+                        }
+                        else {
+                            renameAnnotationStage.show();
+                        }
+                    }
+                    catch (IOException e) {
+                        Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
+                        logger.error("Unable to load extension interface FXML", e);
+                    }
+                }
+                else
+                {
+                    noAnnotation();
+                }
+            }
+            else
+            {
+               noFile();
+            }
+        }
+        else
+        {
+            noProject();
+        }
+    }
+
+    /**
+     * This method allows to open the stage for set the class of an annotation.
+     * @throws IOException exception during the opening of a stage.
+     */
+    public void setClassAnnotationStage() throws IOException {
+
+
+        if(getProject() != null)
+        {
+            if (getCurrentHierarchy() != null)
+            {
+                if (getCurrentHierarchy().getSelectionModel().getSelectedObject() != null)
+                {
+                    try
+                    {
+                        if (modifyClassStage == null) {
+                            // If the renameAnnotation window doesn't exist, we create it
+                            var url = InterfaceController.class.getResource("ModifyClass.fxml");
+                            FXMLLoader loader = new FXMLLoader(url);
+                            loader.setController(new ModifyClassController());
+
+                            modifyClassStage = new Stage();
+
+                            Scene scene = new Scene(loader.load());
+                            modifyClassStage.setScene(scene);
+
+                            modifyClassStage.initStyle(StageStyle.UTILITY);
+                            modifyClassStage.initModality(Modality.APPLICATION_MODAL);
+                            modifyClassStage.initOwner(areaLabel.getScene().getWindow());
+                            modifyClassStage.setResizable(false);
+
+                            modifyClassStage.show();
+                        }
+                        else {
+                            modifyClassStage.show();
+                        }
+                    }
+                    catch (IOException e)
+                    {
+                        Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
+                        logger.error("Unable to load extension interface FXML", e);
+                    }
+                }
+                else
+                {
+                    noAnnotation();
+                }
+            } else
+            {
+                noFile();
+            }
+        }
+        else
+        {
+            noProject();
+        }
+    }
+
+    /**
+     * This method allows to lock or unlock an annotation according to it current state.
+     */
+    @FXML
+    private void toggleLockAnnotation() {
+        QuPathGUI quPathGUI = QuPathGUI.getInstance();
+        QuPathViewer viewer = quPathGUI.getViewer();
+        if (viewer != null && viewer.getSelectedObject() != null) {
+            var selectedObject = viewer.getSelectedObject();
+            boolean isCurrentlyLocked = selectedObject.isLocked();
+            selectedObject.setLocked(!isCurrentlyLocked);
+
+            // Forcer la mise à jour de l'annotation pour refléter le changement dans l'interface utilisateur
+            if (viewer.getHierarchy() != null) {
+                viewer.getHierarchy().fireHierarchyChangedEvent(selectedObject);
+            }
+        } else {
+            noAnnotation();
+        }
+    }
+
+    /**
+     * This method allows to display or hide filling of all the annotations according to their current state.
+     */
+    public void displayOrHideFilling()
+    {
+        QuPathViewer viewer = QuPathGUI.getInstance().getViewer();
+
+        if(viewer != null)
+        {
+            boolean fillingDisplay = !QuPathGUI.getInstance().getOverlayOptions().getFillAnnotations();
+            viewer.getOverlayOptions().setFillAnnotations(fillingDisplay);
+        }
+    }
+
+    /**
+     * This method allows to display or hide names of all the annotations according to their current state.
+     */
+    public void displayOrHideNames()
+    {
+        QuPathViewer viewer = QuPathGUI.getInstance().getViewer();
+
+        if(viewer != null)
+        {
+            boolean nameDisplay = !QuPathGUI.getInstance().getOverlayOptions().getShowNames();
+            viewer.getOverlayOptions().setShowNames(nameDisplay);
+        }
+    }
+
+    /**
+     * Save the project
+     */
+    public void saveProject(){
+        if(getQuPath() != null) {
+            if (getQuPath().getImageData() != null) {
+                Commands.promptToSaveImageData(getQuPath(),getQuPath().getImageData(),true);
+            }
+        }
+    }
+
+
+
+
+    @FXML
+    private void toggleToolbarOrientation() {
+        boolean newOrientation = !currentOrientation;
+        String fxmlPath = "/qupath/ext/ergonomictoolbar/ui/" + (newOrientation ? "VerticalInterface.fxml" : "HorizontalInterface.fxml");
+
+        try {
+            //Recreate the extension with the new orientation
+            Stage stage = ErgonomicToolBarExtension.getSharedStage(newOrientation);
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+
+            loader.setController(new InterfaceController());
+
+            Scene scene = new Scene(loader.load());
+
+            // Update orientation for the next toggle
+            currentOrientation = newOrientation;
+
+            stage.setScene(scene);
+            stage.initStyle(StageStyle.UTILITY);
+            stage.initOwner(QuPathGUI.getInstance().getStage().getScene().getWindow());
+            stage.show();
+
+            if(getCurrentHierarchy() != null)
+            {
+                if(getCurrentHierarchy().getSelectionModel().getSelectedObject() != null)
+                {
+                    getCurrentHierarchy().getSelectionModel().setSelectedObject(getCurrentHierarchy().getSelectionModel().getSelectedObject());
+                }
+            }
+        } catch (IOException e) {
+            Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
+            logger.error("Unable to load extension interface FXML", e);
+        }
     }
 
     /**

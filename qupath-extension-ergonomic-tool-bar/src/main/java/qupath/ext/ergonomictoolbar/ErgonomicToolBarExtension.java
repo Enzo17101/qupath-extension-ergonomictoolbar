@@ -199,8 +199,6 @@ public class ErgonomicToolBarExtension implements QuPathExtension, GitHubProject
 				stage.initOwner(QuPathGUI.getInstance().getStage().getScene().getWindow());
 				stage.setResizable(false);
 				stage.initStyle(StageStyle.UTILITY);
-				//initSetAlwaysOnTop();
-
 			} catch (IOException e) {
 				Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
 				logger.error("Unable to load extension interface FXML", e);
@@ -209,24 +207,6 @@ public class ErgonomicToolBarExtension implements QuPathExtension, GitHubProject
 		stage.show();
 	}
 
-	/**
-	 * Initialize a listener on quPathGui focus
-	 */
-	public void initSetAlwaysOnTop()
-	{
-		Stage quPathStage = QuPathGUI.getInstance().getStage();
-
-		quPathStage.focusedProperty().addListener((observableValue, onHidden, onShown) -> {
-			if(onHidden || stage.isFocused())
-			{
-				stage.setAlwaysOnTop(false);
-			}
-			if(onShown)
-			{
-				stage.setAlwaysOnTop(true);
-			}
-		});
-	}
 	@Override
 	public String getName() {
 		return EXTENSION_NAME;
