@@ -11,6 +11,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.stage.WindowEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javafx.scene.text.Text;
@@ -589,11 +590,17 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
                             modifyClassStage.initOwner(areaLabel.getScene().getWindow());
                             modifyClassStage.setResizable(false);
 
-                            // Récupérer le contrôleur
-                            ModifyClassController controller = loader.getController();
+                            modifyClassStage.getScene().getWindow().addEventHandler(WindowEvent.WINDOW_SHOWN, windowEvent -> {
+                                if(windowEvent.getEventType().equals(WindowEvent.WINDOW_SHOWN))
+                                {
+                                    // Récupérer le contrôleur
+                                    ModifyClassController controller = loader.getController();
 
-                            // Appeler la méthode update_ComboBox sur le contrôleur
-                            controller.update_ComboBox();
+                                    // Appeler la méthode update_ComboBox sur le contrôleur
+                                    controller.update_ComboBox();
+                                }
+                            });
+
 
                             modifyClassStage.show();
                         }
