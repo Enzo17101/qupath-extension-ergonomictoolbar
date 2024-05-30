@@ -107,7 +107,7 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
     /**
      * true when the user is creating an annotation
      */
-    private static boolean inCreation = false;
+    private static boolean inCreation;
 
     /**
      * number of annotation currently loaded
@@ -122,6 +122,8 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
                 getQuPath().getImageData().getHierarchy().addListener(this);
             }
         }
+
+        inCreation = false;
     }
 
     @FXML
@@ -274,6 +276,7 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
 
                             Stage quPathStage = QuPathGUI.getInstance().getStage();
 
+                            /*
                             // The stage is on top only if the application is showing
                             quPathStage.focusedProperty().addListener((observableValue, onHidden, onShown) -> {
                                 if(onHidden || renameAnnotationStage.isFocused())
@@ -284,7 +287,7 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
                                 {
                                     renameAnnotationStage.setAlwaysOnTop(true);
                                 }
-                            });
+                            });*/
                             renameAnnotationStage.show();
                         }
                         else {
@@ -413,7 +416,7 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
     }
 
     /**
-     * Sauvegarde l'image actuelle
+     * Save the project
      */
     public void saveProject(){
         if(getQuPath() != null) {
@@ -423,6 +426,9 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
         }
     }
 
+    /**
+     * This method allows to lock or unlock an annotation according to it current state.
+     */
     @FXML
     private void toggleLockAnnotation() {
         QuPathGUI quPathGUI = QuPathGUI.getInstance();
@@ -438,60 +444,6 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
             }
         } else {
             noAnnotation();
-        }
-    }
-
-    public void noProject()
-    {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("No projects open");
-        alert.setHeaderText(null);
-        alert.setContentText("Please open a project before using this function.");
-        alert.showAndWait();
-    }
-
-    public void noFile()
-    {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("No files open");
-        alert.setHeaderText(null);
-        alert.setContentText("Please open a file before using this function.");
-        alert.showAndWait();
-    }
-
-    public void noAnnotation()
-    {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("No annotation selected");
-        alert.setHeaderText(null);
-        alert.setContentText("Please select an annotation before using this function.");
-        alert.showAndWait();
-    }
-
-    /**
-     * This method locks or unlocks the currently selected ROI (Region of Interest).
-     * It toggles the lock status of the selected annotation in the viewer.
-     */
-    @FXML
-    private void lockUnlockROI() {
-        QuPathGUI gui = QuPathGUI.getInstance();
-        QuPathViewer viewer = gui.getViewer();
-        ImageData<?> imageData = gui.getImageData();
-
-        // If the viewer exists and an object is currently selected
-        if (viewer != null && viewer.getSelectedObject() != null) {
-            // Get the currently selected object
-            PathObject selectedObject = viewer.getSelectedObject();
-
-            // Check the lock status
-            boolean isLocked = selectedObject.isLocked();
-
-            // Reverse the lock status
-            selectedObject.setLocked(!isLocked);
-
-            // Update the display
-            imageData.getHierarchy().fireHierarchyChangedEvent(this);
-            viewer.repaint();
         }
     }
 
@@ -512,10 +464,12 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
                 // Switch to the move tool
                 viewer.setActiveTool(PathTools.MOVE);
                 gui.getToolManager().setSelectedTool(PathTools.MOVE);
+                inCreation = false;
             } else { // Otherwise
                 // Set the active tool to the polygon ROI tool
                 viewer.setActiveTool(PathTools.POLYGON);
                 gui.getToolManager().setSelectedTool(PathTools.POLYGON);
+                inCreation = true;
             }
         }
     }
@@ -538,10 +492,12 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
                 // Switch to the move tool
                 viewer.setActiveTool(PathTools.MOVE);
                 gui.getToolManager().setSelectedTool(PathTools.MOVE);
+                inCreation = false;
             } else { // Otherwise
                 // Set the active tool to the rectangle ROI tool
                 viewer.setActiveTool(PathTools.RECTANGLE);
                 gui.getToolManager().setSelectedTool(PathTools.RECTANGLE);
+                inCreation = true;
             }
         }
     }
@@ -551,7 +507,7 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
     private void createZoomRectangularROI() {
         QuPathGUI gui = QuPathGUI.getInstance();
         QuPathViewer viewer = gui.getViewer();
-        ImageData<?> imageData = gui.getImageData();
+        ImageData<BufferedImage> imageData = gui.getImageData();
 
         // If the image data exists
         if (imageData != null) {
@@ -592,6 +548,7 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
             // Create an annotation from the ROI
             PathObject annotation = PathObjects.createAnnotationObject(rectangleROI);
 
+            inCreation = true;
             // Add the annotation to the image
             imageData.getHierarchy().addObject(annotation);
 
@@ -651,6 +608,7 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
             // Create an annotation from the ROI
             PathObject annotation = PathObjects.createAnnotationObject(rectangleROI);
 
+            inCreation = true;
             // Add the annotation to the image
             imageData.getHierarchy().addObject(annotation);
 
@@ -663,7 +621,6 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
         // Switch to the move tool
         viewer.setActiveTool(PathTools.MOVE);
         gui.getToolManager().setSelectedTool(PathTools.MOVE);
-
     }
 
 
@@ -707,67 +664,113 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
 
     private void createAnnotation(PathObject object) {
 
-        if(getProject() != null)
+        System.out.println("a : " + inCreation);
+        if(inCreation)
         {
-            if(getCurrentHierarchy() != null)
+            if(getProject() != null)
             {
-                if(object != null)
+                if(getCurrentHierarchy() != null)
                 {
-                    try {
-                        if (createAnnotationStage == null) {
-                            // If the renameAnnotation window doesn't exist, we create it
-                            var url = InterfaceController.class.getResource("CreateAnnotation.fxml");
-                            FXMLLoader loader = new FXMLLoader(url);
+                    if(object != null)
+                    {
+                        try {
+                            if (createAnnotationStage == null) {
+                                // If the renameAnnotation window doesn't exist, we create it
+                                var url = InterfaceController.class.getResource("CreateAnnotation.fxml");
+                                FXMLLoader loader = new FXMLLoader(url);
 
-                            loader.setController(createAnnotationController);
-                            createAnnotationController.setObject(object);
+                                loader.setController(createAnnotationController);
+                                createAnnotationController.setObject(object);
 
-                            createAnnotationStage = new Stage();
+                                createAnnotationStage = new Stage();
 
-                            Scene scene = new Scene(loader.load());
-                            createAnnotationStage.setScene(scene);
+                                Scene scene = new Scene(loader.load());
+                                createAnnotationStage.setScene(scene);
 
-                            createAnnotationStage.initStyle(StageStyle.UTILITY);
-                            createAnnotationStage.setResizable(false);
 
-                            Stage quPathStage = QuPathGUI.getInstance().getStage();
+                                createAnnotationStage.initOwner(areaLabel.getScene().getWindow());
+                                createAnnotationStage.initStyle(StageStyle.UTILITY);
+                                createAnnotationStage.initModality(Modality.APPLICATION_MODAL);
+                                createAnnotationStage.setResizable(false);
 
-                            //It is set alway on top only if the application is showing
-                            quPathStage.focusedProperty().addListener((observableValue, onHidden, onShown) -> {
-                                if(onHidden || createAnnotationStage.isFocused())
-                                {
-                                    createAnnotationStage.setAlwaysOnTop(false);
-                                }
-                                if(onShown)
-                                {
-                                    createAnnotationStage.setAlwaysOnTop(true);
-                                }
-                            });
-                            createAnnotationStage.show();
+                                Stage quPathStage = QuPathGUI.getInstance().getStage();
+
+                                /*
+                                //It is set alway on top only if the application is showing
+                                quPathStage.focusedProperty().addListener((observableValue, onHidden, onShown) -> {
+                                    if(onHidden || createAnnotationStage.isFocused())
+                                    {
+                                        createAnnotationStage.setAlwaysOnTop(false);
+                                    }
+                                    if(onShown)
+                                    {
+                                        createAnnotationStage.setAlwaysOnTop(true);
+                                    }
+                                });*/
+                                createAnnotationStage.show();
+                            }
+                            else {
+                                createAnnotationController.setObject(object);
+                                createAnnotationStage.show();
+                            }
                         }
-                        else {
-                            createAnnotationController.setObject(object);
-                            createAnnotationStage.show();
+                        catch (IOException e) {
+                            Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
+                            logger.error("Unable to load extension interface FXML", e);
                         }
                     }
-                    catch (IOException e) {
-                        Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
-                        logger.error("Unable to load extension interface FXML", e);
+                    else
+                    {
+                        noAnnotation();
                     }
                 }
                 else
                 {
-                    noAnnotation();
+                    noFile();
                 }
             }
             else
             {
-                noFile();
+                noProject();
             }
         }
-        else
-        {
-            noProject();
-        }
+        //We set in creation at false to avoid the window from being displayed if we use the QuPath button to create another annotation
+        inCreation = false;
+    }
+
+    /**
+     * Display an error for when there is no open project
+     */
+    public void noProject()
+    {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("No projects open");
+        alert.setHeaderText(null);
+        alert.setContentText("Please open a project before using this function.");
+        alert.showAndWait();
+    }
+
+    /**
+     * Display an error for when there is no open file
+     */
+    public void noFile()
+    {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("No files open");
+        alert.setHeaderText(null);
+        alert.setContentText("Please open a file before using this function.");
+        alert.showAndWait();
+    }
+
+    /**
+     * Display an error for when there is no annotation selected
+     */
+    public void noAnnotation()
+    {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("No annotation selected");
+        alert.setHeaderText(null);
+        alert.setContentText("Please select an annotation before using this function.");
+        alert.showAndWait();
     }
 }
