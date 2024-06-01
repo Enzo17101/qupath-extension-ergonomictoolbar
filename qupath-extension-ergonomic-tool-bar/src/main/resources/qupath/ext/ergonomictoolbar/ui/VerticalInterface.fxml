@@ -42,7 +42,7 @@
                         </ImageView>
                      </graphic>
                   </Button>
-                  <ComboBox prefWidth="60.0" />
+                  <ComboBox fx:id="areaComboBox" prefWidth="60.0" />
                </children>
             </VBox>
             <Button alignment="CENTER" maxHeight="30.0" maxWidth="60.0" minHeight="30.0" minWidth="60.0" mnemonicParsing="false" onAction="#renameAnnotation" prefHeight="30.0" prefWidth="60.0" text="Set Name" textAlignment="CENTER" wrapText="true">

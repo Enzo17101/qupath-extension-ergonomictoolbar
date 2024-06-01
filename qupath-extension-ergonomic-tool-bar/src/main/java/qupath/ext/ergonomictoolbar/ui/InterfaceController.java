@@ -1,10 +1,13 @@
 package qupath.ext.ergonomictoolbar.ui;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ComboBox;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -29,6 +32,7 @@ import qupath.lib.objects.hierarchy.events.PathObjectHierarchyEvent;
 import qupath.lib.objects.hierarchy.events.PathObjectHierarchyListener;
 import qupath.lib.objects.hierarchy.events.PathObjectSelectionListener;
 import qupath.lib.gui.viewer.QuPathViewer;
+import qupath.lib.roi.RectangleROI;
 import qupath.lib.scripting.QP;
 import qupath.lib.gui.viewer.tools.PathTool;
 import qupath.lib.gui.viewer.tools.PathTools;
@@ -48,6 +52,9 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.ResourceBundle;
 
@@ -69,8 +76,18 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
     public Text areaLabel;
     public Text areaMagnitudeLabel;
 
+    /**
+     *
+     */
+    private ObservableList<String> areaList;
+
+    @FXML
+    private ComboBox<PathObject> areaComboBox;
+
     private static final ResourceBundle resources = ResourceBundle.getBundle("qupath.ext.ergonomictoolbar.ui.strings");
 
+
+    private ObservableList<PathObject> predefinedAnnotationList;
     private int rectangular_selection_width = 10000;
     private int rectangular_selection_height = 10000;
     private boolean rectangular_selection_size_in_pixels = true;
@@ -104,7 +121,6 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
      */
     private static boolean currentOrientation = true;//vertical by default
 
-
     /**
      * true when the user is creating an annotation
      */
@@ -137,6 +153,31 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
         }
 
         createAnnotationController = new CreateAnnotationController();
+
+        int ROIWidth = 100;
+        int ROIHeight = 100;
+
+        ArrayList<Integer> RoiDimensions = new ArrayList<Integer>(){{add(5); add(10); add(20); add(50);}};
+
+        predefinedAnnotationList = FXCollections.observableArrayList();
+
+        for(int dimension : RoiDimensions)
+        {
+            // Create an instance of ImageRegion
+            ImageRegion imageRegion = ImageRegion.createInstance(0, 0, dimension, dimension, 0, 0);
+
+            // Use the createRectangleROI method to create the ROI
+            ROI rectangleROI = ROIs.createRectangleROI(imageRegion);
+
+            // Create an annotation from the ROI
+            PathObject annotation = PathObjects.createAnnotationObject(rectangleROI);
+
+            annotation.setName(String.valueOf(dimension));
+
+            predefinedAnnotationList.add(annotation);
+        }
+
+        areaComboBox.setItems(predefinedAnnotationList);
     }
 
     /**
@@ -168,7 +209,6 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
     public void imageDataChanged(QuPathViewer viewer, ImageData<BufferedImage> imageDataOld, ImageData<BufferedImage> imageDataNew) {
         //Pour éviter les problèmes si aucune image n'est ouverte
         //Demandera de rafraichir l'extension (en changeant l'orientation par exemple)
-        System.out.println("image changed");
         if(getQuPath() != null){
             if(getQuPath().getImageData() != null){
                 getQuPath().getImageData().getHierarchy().getSelectionModel().removePathObjectSelectionListener(this);
@@ -205,7 +245,6 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
      */
     @Override
     public void selectedPathObjectChanged(PathObject pathObjectSelected, PathObject previousObject, Collection<PathObject> allSelected) {
-        System.out.println("test");
         annotationNumber = getCurrentHierarchy().getAnnotationObjects().size();
 
         if (pathObjectSelected == null){
@@ -293,7 +332,6 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
         // If the viewer exists
         if (viewer != null) {
             // If you are already set to the rectangle ROI tool
-            System.out.println(gui.getToolManager().getSelectedTool());
             if (viewer.getActiveTool() == PathTools.RECTANGLE) {
                 // Switch to the move tool
                 viewer.setActiveTool(PathTools.MOVE);
@@ -433,8 +471,6 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
      * @param object
      */
     private void createAnnotation(PathObject object) {
-
-        System.out.println("a : " + inCreation);
         if(inCreation)
         {
             if(getProject() != null)
@@ -686,7 +722,7 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
     @FXML
     private void toggleToolbarOrientation() {
         boolean newOrientation = !currentOrientation;
-        String fxmlPath = "/qupath/ext/ergonomictoolbar/ui/" + (newOrientation ? "VerticalInterface.fxml" : "HorizontalInterface.fxml");
+        String fxmlPath = (newOrientation ? "VerticalInterface.fxml" : "HorizontalInterface.fxml");
 
         try {
             //Recreate the extension with the new orientation
