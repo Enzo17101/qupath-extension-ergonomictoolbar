@@ -78,7 +78,7 @@ public class ModifyClassController implements Initializable{
     void confirm_New_Class(ActionEvent event) {
         PathObjectHierarchy hierarchy = QP.getCurrentHierarchy();
 
-        // Check that an image has been opened.
+        //Check that an image has been opened.
         if(hierarchy == null) {
             errorLabel.setText("No file are open.");
         }
@@ -89,23 +89,23 @@ public class ModifyClassController implements Initializable{
             {
                 PathObject object = selectionModel.getSelectedObject();
 
-                // Check that an annotation has been selected.
+                //Check that an annotation has been selected.
                 if(object == null) {
-                    errorLabel.setText("No annotations are selected");
+                    errorLabel.setText("No annotations are selected.");
                 }
                 else
                 {
-                    // We check that a class has been selected.
+                    //Check that a class has been selected.
                     if(class_ComboBox.getValue() != null){
                         errorLabel.setText("");
 
-                        // Modify the class of the selected annotation.
+                        //Modify the class of the selected annotation.
                         object.setPathClass(PathClass.fromString(class_ComboBox.getValue()));
 
-                        // Update annotation names in QuPath.
+                        //Refresh annotation properties in QuPath
                         QP.refreshIDs();
 
-                        // To close the window automatically once the annotation name has been updated
+                        //Close the window once the annotation is updated
                         Stage stage = (Stage) class_ComboBox.getScene().getWindow();
                         stage.close();
                     }

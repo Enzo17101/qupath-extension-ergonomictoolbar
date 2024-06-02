@@ -1,5 +1,6 @@
 package qupath.ext.ergonomictoolbar.ui;
 
+import ij.gui.GUI;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -26,6 +27,7 @@ import qupath.lib.gui.commands.Commands;
 import qupath.lib.gui.measure.ObservableMeasurementTableData;
 import qupath.lib.gui.panes.PathObjectHierarchyView;
 import qupath.lib.gui.viewer.QuPathViewerListener;
+import qupath.lib.gui.viewer.tools.handlers.MoveToolEventHandler;
 import qupath.lib.images.ImageData;
 import qupath.lib.objects.PathObject;
 import qupath.lib.objects.hierarchy.events.PathObjectHierarchyEvent;
@@ -67,7 +69,7 @@ import static qupath.lib.scripting.QP.getCurrentHierarchy;
  * Controller for UI pane contained in interface.fxml
  */
 
-public class InterfaceController extends VBox implements PathObjectSelectionListener, QuPathViewerListener, PathObjectHierarchyListener {
+public class InterfaceController implements PathObjectSelectionListener, QuPathViewerListener, PathObjectHierarchyListener {
 
 
     /**
@@ -76,21 +78,21 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
     public Text areaLabel;
     public Text areaMagnitudeLabel;
 
-    /**
-     *
-     */
-    private ObservableList<String> areaList;
 
+    /**
+     * For the predefined size annotations
+     */
     @FXML
-    private ComboBox<PathObject> areaComboBox;
+    private ComboBox<String> areaComboBox;
+
+    private static boolean isPredefinedAnnotationCreated = false;
 
     private static final ResourceBundle resources = ResourceBundle.getBundle("qupath.ext.ergonomictoolbar.ui.strings");
 
 
     private ObservableList<PathObject> predefinedAnnotationList;
-    private int rectangular_selection_width = 10000;
-    private int rectangular_selection_height = 10000;
-    private boolean rectangular_selection_size_in_pixels = true;
+    private double rectangular_selection_width = 10000;
+    private double rectangular_selection_height = 10000;
 
     /**
      * Logger user to save report the error into logs
@@ -154,12 +156,11 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
 
         createAnnotationController = new CreateAnnotationController();
 
-        int ROIWidth = 100;
-        int ROIHeight = 100;
-
+        /*
         ArrayList<Integer> RoiDimensions = new ArrayList<Integer>(){{add(5); add(10); add(20); add(50);}};
 
         predefinedAnnotationList = FXCollections.observableArrayList();
+
 
         for(int dimension : RoiDimensions)
         {
@@ -176,8 +177,23 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
 
             predefinedAnnotationList.add(annotation);
         }
+         */
 
-        areaComboBox.setItems(predefinedAnnotationList);
+        /**
+         *
+         */
+        ObservableList<String> areaList = FXCollections.observableArrayList();
+
+        areaList.add("0.5");
+        areaList.add("1.0");
+        areaList.add("2.0");
+        areaList.add("5.0");
+
+
+        areaComboBox.setItems(areaList);
+
+        // Set default selection to "0.5 mm²"
+        areaComboBox.getSelectionModel().select(0);
     }
 
     /**
@@ -202,6 +218,9 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
         return modifyClassStage;
     }
 
+    public static boolean getSharedPredefinedAnnotationCreated() {
+        return isPredefinedAnnotationCreated;
+    }
 
     //-------------------HERE GOES YOUR EVENT HANDLERS FOR TO THE TOOLBAR -------------------
 
@@ -347,6 +366,7 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
     }
 
 
+    //TODO remove it
     @FXML
     private void createZoomRectangularROI() {
         QuPathGUI gui = QuPathGUI.getInstance();
@@ -423,17 +443,51 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
             // Dimensions of the rectangle
             int widthInPixels, heightInPixels;
 
-            // If dimensions are already in pixels
-            if (rectangular_selection_size_in_pixels) {
-                widthInPixels = rectangular_selection_width;
-                heightInPixels = rectangular_selection_height;
-            } else { // Convert dimensions from millimeters to pixels
-                PixelCalibration cal = imageData.getServer().getPixelCalibration();
-                widthInPixels = (rectangular_selection_width / (int)cal.getPixelWidthMicrons()) * 1000;
-                heightInPixels = (rectangular_selection_height / (int)cal.getPixelHeightMicrons()) * 1000;
+            // Get selected area from the combo box
+            String selectedArea = areaComboBox.getSelectionModel().getSelectedItem();
+
+            boolean rectangular_selection_size_in_pixels = true;
+
+            if(!selectedArea.isEmpty())
+            {
+                rectangular_selection_size_in_pixels = false;
+                switch(selectedArea)
+                {
+                    case "0.5":
+                        rectangular_selection_height = 0.71;
+                        rectangular_selection_width = 0.70;
+                        break;
+                    case "1.0":
+                    default:
+                        rectangular_selection_height = 1.0;
+                        rectangular_selection_width = 1.0;
+                        break;
+                    case "2.0":
+                        rectangular_selection_height = 1.42;
+                        rectangular_selection_width = 1.41;
+                        break;
+                    case "5.0":
+                        rectangular_selection_height = 2.23;
+                        rectangular_selection_width = 2.24;
+                        break;
+                }
             }
 
+            // If dimensions are already in pixels
+            if (rectangular_selection_size_in_pixels) {
+                widthInPixels = (int)rectangular_selection_width;
+                heightInPixels = (int)rectangular_selection_height;
+            } else { // Convert dimensions from millimeters to pixels
+                PixelCalibration cal = imageData.getServer().getPixelCalibration();
+
+                widthInPixels = (int)(rectangular_selection_width/cal.getPixelWidthMicrons() * 1000);
+                heightInPixels = (int)(rectangular_selection_height/cal.getPixelHeightMicrons() * 1000);
+            }
+
+
+
             // Coordinates of the center of the viewer
+
             int centerX = (int)viewer.getCenterPixelX();
             int centerY = (int)viewer.getCenterPixelY();
 
@@ -450,7 +504,10 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
             // Create an annotation from the ROI
             PathObject annotation = PathObjects.createAnnotationObject(rectangleROI);
 
+            //Set boolean for the other functions
             inCreation = true;
+            isPredefinedAnnotationCreated = true;
+
             // Add the annotation to the image
             imageData.getHierarchy().addObject(annotation);
 
@@ -499,20 +556,17 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
                                 createAnnotationStage.initModality(Modality.APPLICATION_MODAL);
                                 createAnnotationStage.setResizable(false);
 
-                                Stage quPathStage = QuPathGUI.getInstance().getStage();
+                                createAnnotationStage.getScene().getWindow().addEventHandler(WindowEvent.WINDOW_SHOWN, windowEvent -> {
+                                    if(windowEvent.getEventType().equals(WindowEvent.WINDOW_SHOWN))
+                                    {
+                                        // Récupérer le contrôleur
+                                        CreateAnnotationController controller = loader.getController();
 
-                                /*
-                                //It is set alway on top only if the application is showing
-                                quPathStage.focusedProperty().addListener((observableValue, onHidden, onShown) -> {
-                                    if(onHidden || createAnnotationStage.isFocused())
-                                    {
-                                        createAnnotationStage.setAlwaysOnTop(false);
+                                        // Appeler la méthode update_ComboBox sur le contrôleur
+                                        controller.updateWindow();
                                     }
-                                    if(onShown)
-                                    {
-                                        createAnnotationStage.setAlwaysOnTop(true);
-                                    }
-                                });*/
+                                });
+
                                 createAnnotationStage.show();
                             }
                             else {
@@ -542,6 +596,7 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
         }
         //We set in creation at false to avoid the window from being displayed if we use the QuPath button to create another annotation
         inCreation = false;
+        isPredefinedAnnotationCreated = false;
     }
 
     /**
@@ -604,8 +659,6 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
      * @throws IOException exception during the opening of a stage.
      */
     public void setClassAnnotationStage() throws IOException {
-
-
         if(getProject() != null)
         {
             if (getCurrentHierarchy() != null)

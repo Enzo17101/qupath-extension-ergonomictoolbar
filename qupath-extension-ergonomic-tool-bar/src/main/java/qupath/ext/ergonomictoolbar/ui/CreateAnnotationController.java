@@ -1,9 +1,11 @@
 package qupath.ext.ergonomictoolbar.ui;
 
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
@@ -12,9 +14,15 @@ import org.slf4j.LoggerFactory;
 import qupath.ext.ergonomictoolbar.ErgonomicToolBarExtension;
 import qupath.fx.dialogs.Dialogs;
 import qupath.lib.objects.PathObject;
+import qupath.lib.objects.classes.PathClass;
 import qupath.lib.objects.hierarchy.PathObjectHierarchy;
 import qupath.lib.objects.hierarchy.events.PathObjectSelectionModel;
 import qupath.lib.scripting.QP;
+
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ResourceBundle;
 
 public class CreateAnnotationController extends AnchorPane {
 
@@ -23,7 +31,7 @@ public class CreateAnnotationController extends AnchorPane {
     private PathObject object;
 
     @FXML
-    private ComboBox<?> classComboBox;
+    private ComboBox<String> classComboBox;
 
     @FXML
     private CheckBox lockCheckBox;
@@ -34,9 +42,41 @@ public class CreateAnnotationController extends AnchorPane {
     @FXML
     private CheckBox tiledCheckBox;
 
+    @FXML
+    private Label errorLabel;
+
     public void setObject(PathObject object)
     {
         this.object = object;
+    }
+
+    @FXML
+    private void initialize() {
+        updateWindow();
+    }
+
+
+    /**
+     * Method that allows to actualize the comboBox with all the current classes from QuPath.
+     */
+    @FXML
+    void updateWindow() {
+
+        errorLabel.setText("");
+
+        // We load all the classes from QuPath.
+        List<PathClass> path_Classes = QP.getProject().getPathClasses();
+        List<String> class_Names = new ArrayList<>();
+
+        // We add the name of the classes.
+        for(PathClass path_Class : path_Classes){
+            class_Names.add(path_Class.getName());
+        }
+
+        // We add the names to the comboBox.
+        classComboBox.setItems(FXCollections.observableArrayList(class_Names));
+
+        lockCheckBox.setSelected(!InterfaceController.getSharedPredefinedAnnotationCreated());
     }
 
     @FXML
@@ -47,41 +87,51 @@ public class CreateAnnotationController extends AnchorPane {
 
             PathObjectHierarchy hierarchy = QP.getCurrentHierarchy();
 
+            //Check that an image has been opened.
             if(hierarchy == null)
             {
-                System.out.println("null hierarchy");
+                errorLabel.setText("No file are open.");
             }
             else
             {
                 PathObjectSelectionModel selectionModel = hierarchy.getSelectionModel();
 
+                //Check that an annotation has been selected.
                 if(selectionModel != null)
                 {
                     String newName = nameTextField.getText();
 
+                    //Check that a class has been selected.
                     if(object == null) {
-                        System.out.println("null annotation");
+                        errorLabel.setText("No annotations are selected.");
                     }
                     else if(newName.isEmpty())
                     {
-                        System.out.println("Invalid name.");
+                        errorLabel.setText("Invalid name.");
+                    }
+                    else if(classComboBox.getValue() == null)
+                    {
+                        errorLabel.setText("Please select a class.");
                     }
                     else
                     {
-                        //errorLabel.setText("");
+                        errorLabel.setText("");
 
-                        //Modification du nom de l'annotation sélectionnée
+                        //Modify the name of the selected annotation.
                         object.setName(newName);
 
-                        //Actualisation des noms d'annotation dans QuPath
+                        //Modify the class of the selected annotation.
+                        object.setPathClass(PathClass.fromString(classComboBox.getValue()));
+
+                        //Modify the lock property of the selected annotation.
+                        object.setLocked(lockCheckBox.isSelected());
+
+                        //Refresh annotation properties in QuPath
                         QP.refreshIDs();
 
-                        //Pour fermer la fenêtre automatiquement une fois le nom de l'annotation actualisé
-                        //Stage stage = (Stage) nameTextField.getScene().getWindow();
+                        //Close the window once the annotation is updated
                         Stage stage = InterfaceController.getSharedCreateAnnotationStage();
                         stage.close();
-
-                        nameTextField.setText("");
                     }
                 }
             }
