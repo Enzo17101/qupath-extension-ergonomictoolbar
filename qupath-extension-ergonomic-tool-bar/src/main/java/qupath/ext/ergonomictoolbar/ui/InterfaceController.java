@@ -1,69 +1,51 @@
 package qupath.ext.ergonomictoolbar.ui;
 
-import ij.gui.GUI;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import javafx.scene.text.Text;
 import qupath.ext.ergonomictoolbar.ErgonomicToolBarExtension;
 import qupath.fx.dialogs.Dialogs;
-import qupath.lib.gui.QuPathApp;
+import qupath.lib.algorithms.TilerPlugin;
 import qupath.lib.gui.QuPathGUI;
 import qupath.lib.gui.commands.Commands;
 import qupath.lib.gui.measure.ObservableMeasurementTableData;
-import qupath.lib.gui.panes.PathObjectHierarchyView;
+import qupath.lib.gui.viewer.QuPathViewer;
 import qupath.lib.gui.viewer.QuPathViewerListener;
-import qupath.lib.gui.viewer.tools.handlers.MoveToolEventHandler;
+import qupath.lib.gui.viewer.tools.PathTools;
 import qupath.lib.images.ImageData;
+import qupath.lib.images.servers.PixelCalibration;
 import qupath.lib.objects.PathObject;
+import qupath.lib.objects.PathObjects;
 import qupath.lib.objects.hierarchy.events.PathObjectHierarchyEvent;
 import qupath.lib.objects.hierarchy.events.PathObjectHierarchyListener;
 import qupath.lib.objects.hierarchy.events.PathObjectSelectionListener;
-import qupath.lib.gui.viewer.QuPathViewer;
-import qupath.lib.roi.RectangleROI;
-import qupath.lib.scripting.QP;
-import qupath.lib.gui.viewer.tools.PathTool;
-import qupath.lib.gui.viewer.tools.PathTools;
-import qupath.lib.gui.viewer.tools.handlers.PathToolEventHandlers;
-import qupath.lib.objects.PathAnnotationObject;
-import qupath.lib.objects.PathObject;
-import qupath.lib.objects.PathObjects;
-import qupath.lib.regions.ImagePlane;
+import qupath.lib.objects.utils.Tiler;
 import qupath.lib.regions.ImageRegion;
 import qupath.lib.roi.ROIs;
-import qupath.lib.images.ImageData;
-import qupath.lib.images.servers.PixelCalibration;
+import qupath.lib.roi.RoiTools;
 import qupath.lib.roi.interfaces.ROI;
-import qupath.lib.scripting.QP;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.geom.Rectangle2D;
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import static java.lang.Math.round;
 import static qupath.lib.gui.scripting.QPEx.getQuPath;
 import static qupath.lib.scripting.QP.*;
-import static qupath.lib.scripting.QP.getCurrentHierarchy;
 
 /**
  * Controller for UI pane contained in interface.fxml
@@ -501,6 +483,8 @@ public class InterfaceController implements PathObjectSelectionListener, QuPathV
             // Use the createRectangleROI method to create the ROI
             ROI rectangleROI = ROIs.createRectangleROI(imageRegion);
 
+
+
             // Create an annotation from the ROI
             PathObject annotation = PathObjects.createAnnotationObject(rectangleROI);
 
@@ -510,6 +494,29 @@ public class InterfaceController implements PathObjectSelectionListener, QuPathV
 
             // Add the annotation to the image
             imageData.getHierarchy().addObject(annotation);
+
+            Tiler.Builder tilerBuilder = Tiler.builder(1000);
+
+            Tiler tiler = tilerBuilder.build();
+
+            List<PathObject> tiles = tiler.createTiles(rectangleROI);
+
+            imageData.getHierarchy().addObjects(tiles);
+
+            //Tiler tiler = new TilerPlugin<>();
+
+           // tiler.createTiles(rectangleROI);
+
+            /*
+            List<ROI> tiles = RoiTools.makeTiles(rectangleROI, 1000, 1000, true);
+
+            for(ROI roi : tiles)
+            {
+
+                PathObject tile = PathObjects.createTileObject(roi);
+                imageData.getHierarchy().addObject(tile);
+            }
+            */
 
             // Update the display
             imageData.getHierarchy().fireHierarchyChangedEvent(this);
