@@ -307,7 +307,16 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
 
         if(getQuPath() != null) {
             if (getQuPath().getImageData() != null) {
-                Commands.promptToSaveImageData(getQuPath(),getQuPath().getImageData(),true);
+                if(Commands.promptToSaveImageData(getQuPath(),getQuPath().getImageData(),true)){
+                    Alert a = new Alert(Alert.AlertType.CONFIRMATION);
+                    a.setContentText("Save correctly performed");
+                    a.show();
+                }
+                else{
+                    Alert a = new Alert(Alert.AlertType.WARNING);
+                    a.setContentText("Failed to save");
+                    a.show();
+                };
             }
         }
     }
