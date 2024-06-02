@@ -138,32 +138,6 @@ public class InterfaceController implements PathObjectSelectionListener, QuPathV
 
         createAnnotationController = new CreateAnnotationController();
 
-        /*
-        ArrayList<Integer> RoiDimensions = new ArrayList<Integer>(){{add(5); add(10); add(20); add(50);}};
-
-        predefinedAnnotationList = FXCollections.observableArrayList();
-
-
-        for(int dimension : RoiDimensions)
-        {
-            // Create an instance of ImageRegion
-            ImageRegion imageRegion = ImageRegion.createInstance(0, 0, dimension, dimension, 0, 0);
-
-            // Use the createRectangleROI method to create the ROI
-            ROI rectangleROI = ROIs.createRectangleROI(imageRegion);
-
-            // Create an annotation from the ROI
-            PathObject annotation = PathObjects.createAnnotationObject(rectangleROI);
-
-            annotation.setName(String.valueOf(dimension));
-
-            predefinedAnnotationList.add(annotation);
-        }
-         */
-
-        /**
-         *
-         */
         ObservableList<String> areaList = FXCollections.observableArrayList();
 
         areaList.add("0.5");
@@ -418,7 +392,7 @@ public class InterfaceController implements PathObjectSelectionListener, QuPathV
     private void createPredefinedSizedRectangularROI() {
         QuPathGUI gui = QuPathGUI.getInstance();
         QuPathViewer viewer = gui.getViewer();
-        ImageData<?> imageData = gui.getImageData();
+        ImageData<BufferedImage> imageData = gui.getImageData();
 
         // If the image data exists
         if (imageData != null) {
@@ -495,27 +469,17 @@ public class InterfaceController implements PathObjectSelectionListener, QuPathV
             // Add the annotation to the image
             imageData.getHierarchy().addObject(annotation);
 
-            Tiler.Builder tilerBuilder = Tiler.builder(1000);
+            /*
+            int tileWidth = (int)(0.1/cal.getPixelWidthMicrons() * 1000);
+            int tileHeight = (int)(0.1/cal.getPixelHeightMicrons() * 1000);
+
+            Tiler.Builder tilerBuilder = Tiler.builder(tileWidth, tileHeight);
 
             Tiler tiler = tilerBuilder.build();
 
             List<PathObject> tiles = tiler.createTiles(rectangleROI);
 
             imageData.getHierarchy().addObjects(tiles);
-
-            //Tiler tiler = new TilerPlugin<>();
-
-           // tiler.createTiles(rectangleROI);
-
-            /*
-            List<ROI> tiles = RoiTools.makeTiles(rectangleROI, 1000, 1000, true);
-
-            for(ROI roi : tiles)
-            {
-
-                PathObject tile = PathObjects.createTileObject(roi);
-                imageData.getHierarchy().addObject(tile);
-            }
             */
 
             // Update the display
@@ -570,6 +534,7 @@ public class InterfaceController implements PathObjectSelectionListener, QuPathV
                                         CreateAnnotationController controller = loader.getController();
 
                                         // Appeler la méthode update_ComboBox sur le contrôleur
+                                        System.out.println("shooown");
                                         controller.updateWindow();
                                     }
                                 });
