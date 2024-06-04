@@ -36,6 +36,7 @@ import qupath.lib.roi.ROIs;
 import qupath.lib.roi.RoiTools;
 import qupath.lib.roi.interfaces.ROI;
 
+import javax.sound.midi.SysexMessage;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -781,12 +782,19 @@ public class InterfaceController implements PathObjectSelectionListener, QuPathV
     }
 
     /**
-     * Save the project
+     * Sauvegarde l'image actuelle
      */
     public void saveProject(){
         if(getQuPath() != null) {
             if (getQuPath().getImageData() != null) {
-                Commands.promptToSaveImageData(getQuPath(),getQuPath().getImageData(),true);
+                if(Commands.promptToSaveImageData(getQuPath(),getQuPath().getImageData(),true)){
+                    Alert a = new Alert(Alert.AlertType.CONFIRMATION);
+                    a.setContentText("Save correctly performed");
+                    a.show();
+                }
+                else{
+                    saveFailed();
+                };
             }
         }
     }
@@ -828,5 +836,17 @@ public class InterfaceController implements PathObjectSelectionListener, QuPathV
         alert.setHeaderText(null);
         alert.setContentText("Please select an annotation before using this function.");
         alert.showAndWait();
+    }
+
+    /**
+     * Display an error for when the project failed to save
+     */
+    public void saveFailed()
+    {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Save failed.");
+        alert.setHeaderText(null);
+        alert.setContentText("Failed to save.");
+        alert.show();
     }
 }
