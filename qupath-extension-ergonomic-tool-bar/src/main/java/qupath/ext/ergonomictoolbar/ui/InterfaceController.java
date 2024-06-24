@@ -69,6 +69,8 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
 
     private Stage set_Class_Annotation_Stage;
 
+    private Stage calculate_Necrosis_Rate_Stage;
+
     /**
      * The current orientation of the toolbar
      * true means vertical
@@ -202,62 +204,57 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
         viewer.getOverlayOptions().setShowNames(is_Names_Display);
     }
 
-    public void display_Rate_Necrosis() {
-
-        // ****************************************** PARTIE GROVY ****************************************** //
-
-        // Chemin vers le fichier Groovy
-        String groovyFilePath = "qupath-extension-ergonomic-tool-bar/src/main/java/qupath/ext/ergonomictoolbar/groovy/GetGravityCenters.groovy";
-
-        // Rediriger la sortie standard
-        StringWriter stringWriter = new StringWriter();
-        PrintWriter printWriter = new PrintWriter(stringWriter);
-
-        Binding binding = new Binding();
-        binding.setVariable("out", printWriter);
-
-        // Créer une instance de GroovyShell avec le Binding
-        GroovyShell shell = new GroovyShell(binding);
-
-        try {
-            // Charger et exécuter le script Groovy
-            Script script = shell.parse(new File(groovyFilePath));
-            script.run();
-        } catch (IOException e) {
-            e.printStackTrace();
+    /**
+     * @return The stage calculate necrosis rate scene
+     */
+    public Stage getSharedCalculateNecrosisRateStage() {
+        if (calculate_Necrosis_Rate_Stage == null) {
+            calculate_Necrosis_Rate_Stage = new Stage();
+            calculate_Necrosis_Rate_Stage.setResizable(false);
+            calculate_Necrosis_Rate_Stage.initStyle(StageStyle.UTILITY); // Change this as needed
         }
+        return calculate_Necrosis_Rate_Stage;
+    }
 
-        // Récupérer le résultat
-        String resultat = stringWriter.toString();
+    /**
+     * This method allows to open the stage for set the class of an annotation.
+     * @throws IOException exception during the opening of a stage.
+     */
+    public void open_Parameters_Necrosis_Rate_Stage() throws IOException {
 
-        // ****************************************** PARTIE PYTHON ****************************************** //
+        QP quPathApplication;
 
-        try {
-            // Commande pour exécuter Python avec le script comme argument
-            String[] command = {"python", "qupath-extension-ergonomic-tool-bar/src/main/java/qupath/ext/ergonomictoolbar/python/CalculateNecrosisRate.py", resultat};
+        // We check if the stage is null or not in order to not display it twice.
+        if (calculate_Necrosis_Rate_Stage == null) {
 
-            // Création d'un ProcessBuilder
-            ProcessBuilder pb = new ProcessBuilder(command);
-
-            // Redirection de la sortie d'erreur et de la sortie standard
-            pb.redirectErrorStream(true);
-
-            // Démarrage du processus
-            Process process = pb.start();
-
-            // Lecture de la sortie du processus
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
+            // We check if a project is opened or not.
+            if(QP.getProject() != null ){
+                try {
+                    // We opened the stage.
+                    var url = InterfaceController.class.getResource("CalculateNecrosisRate.fxml");
+                    FXMLLoader loader = new FXMLLoader(url);
+                    calculate_Necrosis_Rate_Stage = new Stage();
+                    Scene scene = new Scene(loader.load());
+                    calculate_Necrosis_Rate_Stage.setScene(scene);
+                    calculate_Necrosis_Rate_Stage.setAlwaysOnTop(true);
+                    calculate_Necrosis_Rate_Stage.show();
+                } catch (IOException e) {
+                    Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
+                    logger.error("Unable to load extension interface FXML", e);
+                }
             }
-
-            // Attente de la fin du processus
-            int exitCode = process.waitFor();
-            System.out.println("\nScript Python exécuté avec code de sortie : " + exitCode);
-
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+            // If there is no project we display an error message.
+            else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("No open projects.");
+                alert.setHeaderText(null);
+                alert.setContentText("Please open a project before using this function.");
+                alert.showAndWait();
+            }
+        }
+        else if(!calculate_Necrosis_Rate_Stage.isShowing())
+        {
+            calculate_Necrosis_Rate_Stage.show();
         }
     }
 

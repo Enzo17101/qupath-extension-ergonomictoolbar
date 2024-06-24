@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="140.0" prefWidth="391.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="qupath.ext.ergonomictoolbar.ui.CalculateNecrosisRateController">
+   <children>
+      <CheckBox fx:id="check_Graph_Display" layoutX="277.0" layoutY="21.0" mnemonicParsing="false" text="Graph display" />
+      <TextField fx:id="text_Distance" layoutX="14.0" layoutY="13.0" prefHeight="34.0" prefWidth="62.0" />
+      <Label layoutX="90.0" layoutY="13.0" prefHeight="34.0" prefWidth="159.0" text=": Maximum distance between cells in the same zone" textAlignment="CENTER" wrapText="true" />
+      <Button layoutX="14.0" layoutY="81.0" mnemonicParsing="false" onAction="#display_Rate_Necrosis" prefHeight="34.0" prefWidth="95.0" text="Calculate" />
+      <Label fx:id="label_Necrosis_Rate" alignment="CENTER" layoutX="120.0" layoutY="52.0" prefHeight="83.0" prefWidth="267.0" text="Results :" textAlignment="CENTER" />
+   </children>
+</AnchorPane>

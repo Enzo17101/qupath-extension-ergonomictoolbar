@@ -9,8 +9,6 @@ import math
 from shapely.geometry import Point
 import sys
 
-distance_Max_Pour_Etre_Voisin = 40
-
 def add_Edge(edges, edge_Points, coords, i, j):
     """
     Add an edge to a set of edges if it doesn't already exist, and store the corresponding points.
@@ -165,14 +163,19 @@ def plot_Clusters_With_Hulls(points, distance, color, label):
 
             if concave_Hull is not None:
                 concave_hulls.append(concave_Hull)
-                x, y = concave_Hull.exterior.xy
-                plt.fill(x, y, color, alpha=0.3)
+
+                if(display_Graph == "1"):
+                    x, y = concave_Hull.exterior.xy
+                    plt.fill(x, y, color, alpha=0.3)
+
                 area = concave_Hull.area
                 total_Area += area
             else:
-                plt.plot(cluster_Points[:, 0], cluster_Points[:, 1], 'o', color=color)
+                if(display_Graph == "1"):
+                    plt.plot(cluster_Points[:, 0], cluster_Points[:, 1], 'o', color=color)
         else:
-            plt.plot(cluster_Points[:, 0], cluster_Points[:, 1], 'o', color=color)
+            if(display_Graph == "1"):
+                plt.plot(cluster_Points[:, 0], cluster_Points[:, 1], 'o', color=color)
 
     # Plot all the points
     plt.plot(points[:,0], points[:,1], 'o', color=color, label=f'{label}')
@@ -182,20 +185,20 @@ def plot_Clusters_With_Hulls(points, distance, color, label):
 
 def points_in_polygon(points, polygon):
     """
-    Vérifie si tous les points de l'ensemble 'points' sont dans le polygone 'polygon'.
-    Les sommets et les arêtes du polygone sont considérés comme inclus.
+    Checks if all points in the set 'points' are within the polygon 'polygon'.
+    The vertices and edges of the polygon are considered as included.
 
     Args:
-    - points: Liste de tuples représentant les coordonnées des points à vérifier.
-    - polygon: Liste de tuples représentant les sommets du polygone dans l'ordre.
+    - points: List of tuples representing the coordinates of the points to check.
+    - polygon: List of tuples representing the vertices of the polygon in order.
 
     Returns:
-    - True si tous les points sont à l'intérieur du polygone, False sinon.
+    - True if all points are inside the polygon, False otherwise.
     """
-    # Créer l'objet Polygon à partir de la liste de sommets du polygone
+    # Create the Polygon object from the list of polygon vertices
     poly = Polygon(polygon)
 
-    # Vérifier chaque point
+    # Check each point
     for point_coords in points:
         point = Point(point_coords)
         if not poly.intersects(point):
@@ -203,33 +206,44 @@ def points_in_polygon(points, polygon):
 
     return True
 
+
 def parse_string_to_arrays(input_string):
-    # Séparer le string en lignes
+    """
+    Parses an input string into two numpy arrays representing viable and necrotic cells.
+
+    Args:
+    - input_string: A string containing the coordinates of viable and necrotic cells,
+                    with each type of cells on a separate line.
+
+    Returns:
+    - tuple: A tuple containing two numpy arrays (viable cells, necrotic cells).
+             Returns (None, None) if the input string is not in the expected format.
+    """
+    # Split the string into lines
     lines = input_string.strip().split('\n')
 
     if len(lines) == 2:
-        # Convertir chaque ligne en une liste de listes de float
-        cellules_viables = np.array(eval(lines[0]))
-        cellules_necrosees = np.array(eval(lines[1]))
 
-        return cellules_viables, cellules_necrosees
+        # Convert each line into a list of lists of floats
+        viable_cells = np.array(eval(lines[0]))
+        necrotic_cells = np.array(eval(lines[1]))
+
+        return viable_cells, necrotic_cells
+
     else:
         return None, None
 
-input_string = sys.argv[1]
 
-# Transformer le string en deux tableaux numpy
+# We recover data from the arguments
+input_string = sys.argv[1]
+distance_Max_Pour_Etre_Voisin = int(sys.argv[2])
+display_Graph = sys.argv[3]
+
 cellules_Viables, cellules_Necrosees = parse_string_to_arrays(input_string)
 
-if cellules_Viables is not None and cellules_Necrosees is not None:
-    # Afficher les tableaux numpy obtenus
-    print("Tableau viable reçu depuis Java :\n", cellules_Viables)
-    print("Tableau nécrosé reçu depuis Java :\n", cellules_Necrosees)
-else:
-    print("Erreur lors de la transformation du string en tableaux numpy.")
-
 # Create a new figure
-plt.figure()
+if(display_Graph == "1"):
+    plt.figure()
 
 # Plot clusters and concave hulls for necrotic cells
 aire_necrosees, concave_hulls_necrosees = plot_Clusters_With_Hulls(cellules_Necrosees, distance_Max_Pour_Etre_Voisin, 'blue', 'Necrotic cells')
@@ -251,24 +265,23 @@ if concave_hulls_necrosees != None and concave_hulls_viables != None:
                 # If viable area is within necrotic area
                 if hull_necrose.contains(hull_viable):
                     aire_necrosees -= intersection_area
-                    print("Viable inside Necrotic")
 
                 # If necrotic area is within viable area
                 elif hull_viable.contains(hull_necrose):
                     aire_viables -= intersection_area
-                    print("Necrotic inside Viable")
 
 # Calculate the necrosis rate
 if(aire_necrosees + aire_viables == 0):
-    print("no cells.")
+    print("No zone with at least 3 cells.")
 else:
     taux_Necrose = (aire_necrosees / (aire_necrosees + aire_viables)) * 100
 
     # Print the total areas and necrosis rate
-    print(f'Total area of necrotic cells = {aire_necrosees:.2f}\nTotal area of viable cells = {aire_viables:.2f}\nNecrosis rate = {taux_Necrose:.2f} %')
+    print(f'Total area of necrotic cells = {aire_necrosees:.2f} µm²\nTotal area of viable cells = {aire_viables:.2f} µm²\nNecrosis rate = {taux_Necrose:.2f} %')
 
 # Display the plot
-plt.xlabel('X')
-plt.ylabel('Y')
-plt.legend()
-plt.show()
+if(display_Graph == "1"):
+    plt.xlabel('X')
+    plt.ylabel('Y')
+    plt.legend()
+    plt.show()
