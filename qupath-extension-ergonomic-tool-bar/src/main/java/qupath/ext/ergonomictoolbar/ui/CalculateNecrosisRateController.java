@@ -77,8 +77,29 @@ public class CalculateNecrosisRateController {
     }
 
     /**
+     * Method that allows to know if there is at least one tumor zone
+     * @return
+     */
+    public boolean is_Tumor_Zone_Present() {
+
+        PathObjectHierarchy hierarchy = QP.getCurrentHierarchy();
+        Collection<PathObject> annotations = hierarchy.getAnnotationObjects();
+
+        // Iterate through each annotation object
+        for (PathObject annotation : annotations) {
+
+            // Check if the name of the annotation is "Tumor zone"
+            if (Objects.equals(annotation.getName(), "Tumor zone")) {
+                return true;
+            }
+        }
+
+        // Return false if no "Tumor zone" annotation is found
+        return false;
+    }
+
+    /**
      * Method that allows to get the gravity centers of cells with a groovy script
-     * @param groovyFilePath
      * @return Gravity centers cells
      */
     public String get_Gravity_Centers() {
@@ -153,24 +174,38 @@ public class CalculateNecrosisRateController {
      */
     public void display_Rate_Necrosis() {
 
-        String display_Graph = "0";
+        // Get the current stage from the scene of the check_Graph_Display control
+        Stage currentStage = (Stage) check_Graph_Display.getScene().getWindow();
 
-        if(is_Dist_Ok(text_Distance.getText())){
-            String gravity_Centers_Cells = get_Gravity_Centers();
+        // Check if there is at least one tumor zone present
+        if (is_Tumor_Zone_Present()) {
 
-            if(check_Graph_Display.isSelected()){
-                display_Graph = "1";
+            String display_Graph = "0";
+
+            // Check if the distance entered is valid
+            if (is_Dist_Ok(text_Distance.getText())) {
+
+                if (check_Graph_Display.isSelected()) {
+                    display_Graph = "1";
+                }
+
+                get_And_Display_Rate_Necrosis(get_Gravity_Centers(), display_Graph);
+
+            } else {
+                // Display an error alert if distance input is invalid
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Distance error.");
+                alert.setHeaderText(null);
+                alert.setContentText("Please fill a distance with a float superior to 0.");
+                alert.initOwner(currentStage);
+                alert.showAndWait();
             }
-
-            get_And_Display_Rate_Necrosis(gravity_Centers_Cells, display_Graph);
-
         } else {
+            // Display an error alert if no tumor zone is present
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Distance error.");
+            alert.setTitle("Tumor zone error.");
             alert.setHeaderText(null);
-            alert.setContentText("Please fill a distance with a float superior to 0.");
-
-            Stage currentStage = (Stage) check_Graph_Display.getScene().getWindow();
+            alert.setContentText("You must create at least one tumor zone.");
             alert.initOwner(currentStage);
             alert.showAndWait();
         }

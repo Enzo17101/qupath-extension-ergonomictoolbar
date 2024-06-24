@@ -274,7 +274,7 @@ if concave_hulls_necrosees != None and concave_hulls_viables != None:
 if(aire_necrosees + aire_viables == 0):
     print("No zone with at least 3 cells.")
 else:
-    taux_Necrose = (aire_necrosees / (aire_necrosees + aire_viables)) * 100
+    taux_Necrose = (aire_viables / (aire_necrosees + aire_viables)) * 100
 
     # Print the total areas and necrosis rate
     print(f'Total area of necrotic cells = {aire_necrosees:.2f} µm²\nTotal area of viable cells = {aire_viables:.2f} µm²\nNecrosis rate = {taux_Necrose:.2f} %')

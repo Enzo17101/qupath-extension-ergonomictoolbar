@@ -9,6 +9,11 @@ def hierarchy = getCurrentHierarchy()
 // Récupérer toutes les annotations de la hiérarchie
 def annotations = hierarchy.getAnnotationObjects()
 
+annotations.removeIf { annotation ->
+    annotation.getName() != "Tumor zone"
+}
+
+
 // Tableaux pour stocker les objets en fonction de leur classification
 def tumors = []
 def necroses = []

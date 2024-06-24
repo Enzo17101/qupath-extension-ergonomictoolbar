@@ -237,6 +237,7 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
                     Scene scene = new Scene(loader.load());
                     calculate_Necrosis_Rate_Stage.setScene(scene);
                     calculate_Necrosis_Rate_Stage.setAlwaysOnTop(true);
+                    calculate_Necrosis_Rate_Stage.setResizable(false);
                     calculate_Necrosis_Rate_Stage.show();
                 } catch (IOException e) {
                     Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
