@@ -223,6 +223,8 @@ public class ErgonomicToolBarExtension implements QuPathExtension, GitHubProject
 			}
 		});
 	}
+
+
 	@Override
 	public String getName() {
 		return EXTENSION_NAME;

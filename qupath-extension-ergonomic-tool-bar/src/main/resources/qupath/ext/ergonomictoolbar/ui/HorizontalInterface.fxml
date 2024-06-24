@@ -10,7 +10,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="70.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane prefHeight="70.0" prefWidth="780.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <HBox alignment="CENTER" prefHeight="80.0" prefWidth="883.0" spacing="10.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -112,6 +112,7 @@
                   </Text>
                </children>
             </VBox>
+            <Button mnemonicParsing="false" onAction="#display_Rate_Necrosis" prefHeight="26.0" prefWidth="46.0" text="Run" />
             <Button layoutX="702.0" layoutY="15.0" maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#save_Project" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white;">
                <graphic>
                   <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true">

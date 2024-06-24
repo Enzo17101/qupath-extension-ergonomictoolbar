@@ -1,5 +1,6 @@
 package qupath.ext.ergonomictoolbar.ui;
 
+import groovy.lang.Binding;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -17,25 +18,34 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qupath.ext.ergonomictoolbar.ErgonomicToolBarExtension;
 import qupath.fx.dialogs.Dialogs;
+import qupath.lib.geom.Point2;
 import qupath.lib.gui.QuPathGUI;
 import qupath.lib.gui.commands.Commands;
 import qupath.lib.gui.measure.ObservableMeasurementTableData;
 import qupath.lib.gui.viewer.QuPathViewerListener;
 import qupath.lib.images.ImageData;
 import qupath.lib.objects.PathObject;
+import qupath.lib.objects.hierarchy.PathObjectHierarchy;
 import qupath.lib.objects.hierarchy.events.PathObjectSelectionListener;
 import qupath.lib.gui.viewer.QuPathViewer;
 import qupath.lib.scripting.QP;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ResourceBundle;
 
 import static java.lang.Math.round;
 import static qupath.lib.gui.scripting.QPEx.getQuPath;
 import static qupath.lib.scripting.QP.*;
+
+import groovy.lang.GroovyShell;
+import groovy.lang.Script;
 
 /**
  * Controller for UI pane contained in interface.fxml
@@ -193,6 +203,35 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
         QuPathGUI quPath_GUI = QuPathGUI.getInstance();
         QuPathViewer viewer = quPath_GUI.getViewer();
         viewer.getOverlayOptions().setShowNames(is_Names_Display);
+    }
+
+    public void display_Rate_Necrosis() {
+
+        // Chemin vers le fichier Groovy
+        String groovyFilePath = "qupath-extension-ergonomic-tool-bar/src/main/java/qupath/ext/ergonomictoolbar/groovy/GetGravityCenters.groovy";
+
+        // Rediriger la sortie standard
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+
+        Binding binding = new Binding();
+        binding.setVariable("out", printWriter);
+
+        // Créer une instance de GroovyShell avec le Binding
+        GroovyShell shell = new GroovyShell(binding);
+
+        try {
+            // Charger et exécuter le script Groovy
+            Script script = shell.parse(new File(groovyFilePath));
+            script.run();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Récupérer le résultat
+        String resultat = stringWriter.toString();
+        System.out.println("Résultat du script Groovy :");
+        System.out.println(resultat);
     }
 
     /**
