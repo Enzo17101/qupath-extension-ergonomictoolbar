@@ -32,10 +32,7 @@ import qupath.lib.scripting.QP;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ResourceBundle;
@@ -207,6 +204,8 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
 
     public void display_Rate_Necrosis() {
 
+        // ****************************************** PARTIE GROVY ****************************************** //
+
         // Chemin vers le fichier Groovy
         String groovyFilePath = "qupath-extension-ergonomic-tool-bar/src/main/java/qupath/ext/ergonomictoolbar/groovy/GetGravityCenters.groovy";
 
@@ -230,8 +229,36 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
 
         // Récupérer le résultat
         String resultat = stringWriter.toString();
-        System.out.println("Résultat du script Groovy :");
-        System.out.println(resultat);
+
+        // ****************************************** PARTIE PYTHON ****************************************** //
+
+        try {
+            // Commande pour exécuter Python avec le script comme argument
+            String[] command = {"python", "qupath-extension-ergonomic-tool-bar/src/main/java/qupath/ext/ergonomictoolbar/python/CalculateNecrosisRate.py", resultat};
+
+            // Création d'un ProcessBuilder
+            ProcessBuilder pb = new ProcessBuilder(command);
+
+            // Redirection de la sortie d'erreur et de la sortie standard
+            pb.redirectErrorStream(true);
+
+            // Démarrage du processus
+            Process process = pb.start();
+
+            // Lecture de la sortie du processus
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
+
+            // Attente de la fin du processus
+            int exitCode = process.waitFor();
+            System.out.println("\nScript Python exécuté avec code de sortie : " + exitCode);
+
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -322,7 +349,6 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
 
             areaLabel.setText(String.valueOf(aire));
             areaLabel1.setText(magnitude);
-            System.out.println(aire);
         }
     }
 
