@@ -235,11 +235,22 @@ def parse_string_to_arrays(input_string):
 
 
 # We recover data from the arguments
-input_string = sys.argv[1]
-distance_Max_Pour_Etre_Voisin = int(sys.argv[2])
-display_Graph = sys.argv[3]
+with open(sys.argv[1], 'r') as file:
+    args = [line.strip() for line in file.readlines()]
 
-cellules_Viables, cellules_Necrosees = parse_string_to_arrays(input_string)
+string_Cellules_Viables = args[0]
+cellules_Viables = np.array(eval(string_Cellules_Viables)).reshape(-1, 2)
+cellules_Viables[:, 1] *= -1 # Echelle QuPath inversé pour les Y
+
+string_Cellules_Necrosees = args[1]
+cellules_Necrosees = np.array(eval(string_Cellules_Necrosees)).reshape(-1, 2)
+cellules_Necrosees[:, 1] *= -1 # Echelle QuPath inversé pour les Y
+
+distance_Max_Pour_Etre_Voisin = int(args[2])
+display_Graph = args[3]
+file_Path = args[4]
+
+#cellules_Viables, cellules_Necrosees = parse_string_to_arrays(gravity_Centers_Cells)
 
 # Create a new figure
 if(display_Graph == "1"):
@@ -250,8 +261,6 @@ aire_necrosees, concave_hulls_necrosees = plot_Clusters_With_Hulls(cellules_Necr
 
 # Plot clusters and concave hulls for viable cells
 aire_viables, concave_hulls_viables = plot_Clusters_With_Hulls(cellules_Viables, distance_Max_Pour_Etre_Voisin, 'red', 'Viable cells')
-
-# JE SAIS PAS SI VRAIMENT NECESSAIRE
 
 if concave_hulls_necrosees != None and concave_hulls_viables != None:
 
@@ -284,4 +293,4 @@ if(display_Graph == "1"):
     plt.xlabel('X')
     plt.ylabel('Y')
     plt.legend()
-    plt.show()
+    plt.savefig(file_Path)

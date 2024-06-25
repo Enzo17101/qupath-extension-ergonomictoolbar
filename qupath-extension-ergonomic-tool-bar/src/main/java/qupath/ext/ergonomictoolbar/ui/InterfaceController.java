@@ -229,19 +229,29 @@ public class InterfaceController extends VBox implements PathObjectSelectionList
 
             // We check if a project is opened or not.
             if(QP.getProject() != null ){
-                try {
-                    // We opened the stage.
-                    var url = InterfaceController.class.getResource("CalculateNecrosisRate.fxml");
-                    FXMLLoader loader = new FXMLLoader(url);
-                    calculate_Necrosis_Rate_Stage = new Stage();
-                    Scene scene = new Scene(loader.load());
-                    calculate_Necrosis_Rate_Stage.setScene(scene);
-                    calculate_Necrosis_Rate_Stage.setAlwaysOnTop(true);
-                    calculate_Necrosis_Rate_Stage.setResizable(false);
-                    calculate_Necrosis_Rate_Stage.show();
-                } catch (IOException e) {
-                    Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
-                    logger.error("Unable to load extension interface FXML", e);
+
+                // We check if a image is opened or not.
+                if(QP.getCurrentImageData() != null){
+                    try {
+                        // We opened the stage.
+                        var url = InterfaceController.class.getResource("CalculateNecrosisRate.fxml");
+                        FXMLLoader loader = new FXMLLoader(url);
+                        calculate_Necrosis_Rate_Stage = new Stage();
+                        Scene scene = new Scene(loader.load());
+                        calculate_Necrosis_Rate_Stage.setScene(scene);
+                        calculate_Necrosis_Rate_Stage.setAlwaysOnTop(true);
+                        calculate_Necrosis_Rate_Stage.setResizable(false);
+                        calculate_Necrosis_Rate_Stage.show();
+                    } catch (IOException e) {
+                        Dialogs.showErrorMessage("Extension Error", "GUI loading failed");
+                        logger.error("Unable to load extension interface FXML", e);
+                    }
+                } else {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("No open image.");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Please open a image before using this function.");
+                    alert.showAndWait();
                 }
             }
             // If there is no project we display an error message.
