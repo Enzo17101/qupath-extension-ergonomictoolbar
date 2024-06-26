@@ -139,6 +139,20 @@ public class CalculateNecrosisRateController {
     }
 
     /**
+     * Method that allows to select a folder.
+     */
+    public void select_Folder() {
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setTitle("Selec a folder");
+
+        File selectedDirectory = directoryChooser.showDialog((Stage) check_Graph_Display.getScene().getWindow());
+
+        if (selectedDirectory != null) {
+            folder_Path.setText(selectedDirectory.getAbsolutePath());
+        }
+    }
+
+    /**
      * Method that allows to get the gravity centers of cells with a groovy script
      * @return Gravity centers cells
      */
@@ -187,15 +201,6 @@ public class CalculateNecrosisRateController {
                 writer.write(text_Distance.getText() + "\n");
                 writer.write(display_Graph + "\n");
                 writer.write(file_Path + "\n");
-            }
-
-            // Lire et afficher le contenu du fichier temporaire pour vérification
-            try (BufferedReader reader = new BufferedReader(new FileReader(temp_File))) {
-                String line;
-                System.out.println("Contenu du fichier temporaire:");
-                while ((line = reader.readLine()) != null) {
-                    System.out.println(line);
-                }
             }
 
             // Commande pour exécuter le script Python avec le chemin du fichier temporaire comme argument
@@ -303,20 +308,6 @@ public class CalculateNecrosisRateController {
 
             // Display an error alert if no tumor zone is present
             alert_Error_Tumor_Zone.showAndWait();
-        }
-    }
-
-    /**
-     * Method that allows to select a folder.
-     */
-    public void select_Folder() {
-        DirectoryChooser directoryChooser = new DirectoryChooser();
-        directoryChooser.setTitle("Selec a folder");
-
-        File selectedDirectory = directoryChooser.showDialog((Stage) check_Graph_Display.getScene().getWindow());
-
-        if (selectedDirectory != null) {
-            folder_Path.setText(selectedDirectory.getAbsolutePath());
         }
     }
 }

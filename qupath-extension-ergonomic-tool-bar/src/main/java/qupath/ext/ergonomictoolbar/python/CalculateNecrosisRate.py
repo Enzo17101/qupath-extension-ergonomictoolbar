@@ -171,14 +171,13 @@ def plot_Clusters_With_Hulls(points, distance, color, label):
                 area = concave_Hull.area
                 total_Area += area
             else:
-                if(display_Graph == "1"):
-                    plt.plot(cluster_Points[:, 0], cluster_Points[:, 1], 'o', color=color)
+                if display_Graph == "1":
+                    plt.plot(cluster_Points[:, 0], cluster_Points[:, 1], 'o', color=color, markersize=1)
         else:
-            if(display_Graph == "1"):
-                plt.plot(cluster_Points[:, 0], cluster_Points[:, 1], 'o', color=color)
+            if display_Graph == "1":
+                plt.plot(cluster_Points[:, 0], cluster_Points[:, 1], 'o', color=color, markersize=1)
 
-    # Plot all the points
-    plt.plot(points[:,0], points[:,1], 'o', color=color, label=f'{label}')
+    plt.plot(points[:, 0], points[:, 1], 'o', color=color, label=f'{label}', markersize=1)
 
     # Return the total area covered by concave hulls and the concave hulls themselves
     return total_Area, concave_hulls
